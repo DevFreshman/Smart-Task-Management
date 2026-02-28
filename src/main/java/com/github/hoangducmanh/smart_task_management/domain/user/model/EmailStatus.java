@@ -34,6 +34,7 @@ public enum EmailStatus {
     };
 
     private final String status;
+    
     EmailStatus(String status) {
         this.status = status;
     }

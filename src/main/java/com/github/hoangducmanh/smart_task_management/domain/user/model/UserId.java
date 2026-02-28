@@ -14,6 +14,7 @@ public final record UserId(UUID value) {
     public static UserId generate() {
         return new UserId(UUID.randomUUID());
     }
+    // If we want to create UserId from string, we can add a static factory method
     public static UserId fromString(String value) {
         if (value==null||value.trim().isEmpty()) {
             throw new IllegalArgumentException("UserId string value cannot be null or empty");

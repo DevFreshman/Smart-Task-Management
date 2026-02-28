@@ -58,10 +58,6 @@ public class User {
     }
 
     public static User register(UserId id, Email email, HashedPassword hashedPassword,LocalDateTime registeredAt) {
-        Objects.requireNonNull(id, "User ID cannot be null");
-        Objects.requireNonNull(email, "Email cannot be null");
-        Objects.requireNonNull(hashedPassword, "Hashed password cannot be null");
-        Objects.requireNonNull(registeredAt, "Registered at cannot be null");
         AuditInfo auditInfo = AuditInfo.create(registeredAt);
         return new User(id, email, EmailStatus.UNVERIFIED, hashedPassword, auditInfo, null, Role.USER);
     }
