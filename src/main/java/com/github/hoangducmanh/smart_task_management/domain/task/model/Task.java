@@ -22,7 +22,7 @@ public class Task {
     private TaskPriority priority;       // Priority of the task (e.g., LOW, MEDIUM, HIGH, CRITICAL)
     private LocalDateTime deadline;       // Deadline for the task, can be null if no deadline
     private final UserId ownerId;          // ID of the user who owns the task
-    private HashSet<UserId> assigneeIds;       // IDs of users assigned to the task
+    private final HashSet<UserId> assigneeIds;       // IDs of users assigned to the task
     private AuditInfo auditInfo;            // Audit information (createdAt, updatedAt, createdBy, updatedBy)
 
     private Task(TaskId id, Title title, Description description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, UserId ownerId, HashSet<UserId> assigneeIds, AuditInfo auditInfo) {
@@ -33,7 +33,7 @@ public class Task {
         this.priority = Objects.requireNonNull(priority, "Priority cannot be null");
         this.deadline = deadline; // Deadline can be null, but we can allow it to be updated later
         this.ownerId = Objects.requireNonNull(ownerId, "Owner ID cannot be null");
-        this.assigneeIds = assigneeIds; // Assignee IDs can be empty, but we can allow it to be updated later
+        this.assigneeIds = assigneeIds == null ? new HashSet<>() : new HashSet<>(assigneeIds); // Assignee IDs can be empty, but we can allow it to be updated later
         this.auditInfo = Objects.requireNonNull(auditInfo, "Audit info cannot be null");
     }
 
@@ -77,11 +77,8 @@ public class Task {
     }
 
     // update information of task, except status and assignees
-    public void update(Title title, Description description, TaskPriority priority, LocalDateTime deadline, LocalDateTime now) {
+    public void update(Title title, Description description, TaskPriority priority) {
         ensureNotDeleted();
-        if(deadline != null && deadline.isBefore(now)) {
-            throw new DeadlineInPastException("Deadline cannot be in the past"); // throws DeadlineInPastException
-        }
         if(title != null) {
             this.title = title;
         }
@@ -91,12 +88,18 @@ public class Task {
         if(priority != null) {
             this.priority = priority;
         }
-        if(deadline != null) {
-            this.deadline = deadline;
-        }
-        this.auditInfo = this.auditInfo.update(now);
+    }
+    // change deadline of task, but only allow future deadline or null (remove deadline)
+    public void changeDeadline(LocalDateTime newDeadline, LocalDateTime now) {
+    ensureNotDeleted();
+
+    if (newDeadline != null && newDeadline.isBefore(now)) {
+        throw new DeadlineInPastException("Deadline cannot be in the past");
     }
 
+    this.deadline = newDeadline; // null = remove deadline
+    this.auditInfo = this.auditInfo.update(now);
+    }
     // change status of task, but only allow valid status transition
     public void changeStatus(TaskStatus newStatus, LocalDateTime now) {
         Objects.requireNonNull(newStatus, "New status cannot be null");

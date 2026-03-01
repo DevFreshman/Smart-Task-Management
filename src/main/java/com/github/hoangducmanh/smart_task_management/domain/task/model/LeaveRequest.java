@@ -55,6 +55,7 @@ public class LeaveRequest {
     }
 
     public boolean isExpired(LocalDateTime now) {
+        Objects.requireNonNull(now, "now cannot be null");
         return status == LeaveRequestStatus.PENDING && now.isAfter(expiresAt);
     }
 
