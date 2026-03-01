@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management;
+package com.github.hoangducmanh.smart_task_management.bootstrap;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
