@@ -6,7 +6,7 @@ public enum TaskStatus {
     TODO("To Do"){
         @Override
         public TaskStatus updateStatus(TaskStatus newStatus) {
-            if(newStatus == IN_PROGRESS) {
+            if(newStatus == IN_PROGRESS || newStatus == CANCELLED){
                 return newStatus;
             }
             throw new TaskStatusTransitionException("Invalid status transition from TODO to " + newStatus);
@@ -15,7 +15,7 @@ public enum TaskStatus {
     IN_PROGRESS("In Progress"){
         @Override
         public TaskStatus updateStatus(TaskStatus newStatus) {
-            if(newStatus == COMPLETED) {
+            if(newStatus == COMPLETED || newStatus == CANCELLED) {
                 return newStatus;
             }
             throw new TaskStatusTransitionException("Invalid status transition from IN_PROGRESS to " + newStatus);
@@ -27,7 +27,22 @@ public enum TaskStatus {
             if(newStatus != COMPLETED) {
                 throw new TaskStatusTransitionException("Task is already completed. Cannot transition to " + newStatus);
             }
+            if(newStatus == CANCELLED){
+                return newStatus;
+            }
             return this;
+        }
+    },
+    CANCELLED("Cancelled"){
+        @Override
+        public TaskStatus updateStatus(TaskStatus newStatus) {
+            if(newStatus == CANCELLED) {
+                throw new TaskStatusTransitionException("Task is already Cancelled. Cannot transition to " + newStatus);
+            }
+            if (newStatus == TODO) {
+                return newStatus;
+            }
+            throw new TaskStatusTransitionException("The task status changes to To Do only when reopening a cancelled task");
         }
     };
 
