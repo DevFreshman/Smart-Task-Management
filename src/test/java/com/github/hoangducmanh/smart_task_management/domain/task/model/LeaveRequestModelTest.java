@@ -4,7 +4,8 @@ import com.github.hoangducmanh.smart_task_management.domain.task.exception.Leave
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -15,7 +16,7 @@ class LeaveRequestModelTest {
     // BR: New leave request starts as pending and expires after 3 days.
     @Test
     void create_shouldSetPendingAndDefaultExpiryAfterThreeDays() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 10, 9, 0);
+        Instant now = Instant.parse("2026-02-10T09:00:00Z");
 
         LeaveRequest request = LeaveRequest.create(
             LeaveRequestId.fromString("de84f4f3-c5af-4a57-b62f-1ddd12c537d3"),
@@ -26,7 +27,7 @@ class LeaveRequestModelTest {
         );
 
         assertEquals(LeaveRequestStatus.PENDING, request.getStatus());
-        assertEquals(now.plusDays(3), request.getExpiresAt());
+        assertEquals(now.plus(3, ChronoUnit.DAYS), request.getExpiresAt());
         assertEquals(now, request.getAuditInfo().createdAt());
         assertEquals(now, request.getAuditInfo().updatedAt());
     }
@@ -34,34 +35,34 @@ class LeaveRequestModelTest {
     // BR: Expiry depends on pending status and current time.
     @Test
     void isExpired_shouldReturnTrueOnlyWhenPendingAndNowAfterExpiresAt() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 10, 9, 0);
+        Instant now = Instant.parse("2026-02-10T09:00:00Z");
         LeaveRequest request = createPendingRequest(now);
 
-        assertEquals(false, request.isExpired(now.plusDays(2)));
-        assertEquals(false, request.isExpired(now.plusDays(3)));
-        assertEquals(true, request.isExpired(now.plusDays(3).plusSeconds(1)));
+        assertEquals(false, request.isExpired(now.plus(2, ChronoUnit.DAYS)));
+        assertEquals(false, request.isExpired(now.plus(3, ChronoUnit.DAYS)));
+        assertEquals(true, request.isExpired(now.plus(3, ChronoUnit.DAYS).plusSeconds(1)));
     }
 
     // BR: Approve transitions status and updates audit.
     @Test
     void approve_shouldChangeStatusAndUpdateAudit() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 10, 9, 0);
+        Instant now = Instant.parse("2026-02-10T09:00:00Z");
         LeaveRequest request = createPendingRequest(now);
-        LocalDateTime approvedAt = now.plusHours(4);
+        Instant approvedAt = now.plus(4, ChronoUnit.HOURS);
 
         request.approve(approvedAt);
 
         assertEquals(LeaveRequestStatus.APPROVED, request.getStatus());
         assertEquals(approvedAt, request.getAuditInfo().updatedAt());
-        assertTrue(!request.isExpired(now.plusDays(5)));
+        assertTrue(!request.isExpired(now.plus(5, ChronoUnit.DAYS)));
     }
 
     // BR: Reject transitions status and updates audit.
     @Test
     void reject_shouldChangeStatusAndUpdateAudit() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 10, 9, 0);
+        Instant now = Instant.parse("2026-02-10T09:00:00Z");
         LeaveRequest request = createPendingRequest(now);
-        LocalDateTime rejectedAt = now.plusHours(2);
+        Instant rejectedAt = now.plus(2, ChronoUnit.HOURS);
 
         request.reject(rejectedAt);
 
@@ -72,9 +73,9 @@ class LeaveRequestModelTest {
     // BR: Expire transitions status and updates audit.
     @Test
     void expire_shouldChangeStatusAndUpdateAudit() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 10, 9, 0);
+        Instant now = Instant.parse("2026-02-10T09:00:00Z");
         LeaveRequest request = createPendingRequest(now);
-        LocalDateTime expiredAt = now.plusDays(4);
+        Instant expiredAt = now.plus(4, ChronoUnit.DAYS);
 
         request.expire(expiredAt);
 
@@ -85,20 +86,20 @@ class LeaveRequestModelTest {
     // BR: Only pending request can change status.
     @Test
     void statusTransition_shouldThrowWhenRequestIsNotPending() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 10, 9, 0);
+        Instant now = Instant.parse("2026-02-10T09:00:00Z");
         LeaveRequest approved = createPendingRequest(now);
-        approved.approve(now.plusMinutes(1));
+        approved.approve(now.plus(1, ChronoUnit.MINUTES));
 
-        assertThrows(LeaveRequestStatusTransitionException.class, () -> approved.approve(now.plusMinutes(2)));
-        assertThrows(LeaveRequestStatusTransitionException.class, () -> approved.reject(now.plusMinutes(2)));
-        assertThrows(LeaveRequestStatusTransitionException.class, () -> approved.expire(now.plusMinutes(2)));
+        assertThrows(LeaveRequestStatusTransitionException.class, () -> approved.approve(now.plus(2, ChronoUnit.MINUTES)));
+        assertThrows(LeaveRequestStatusTransitionException.class, () -> approved.reject(now.plus(2, ChronoUnit.MINUTES)));
+        assertThrows(LeaveRequestStatusTransitionException.class, () -> approved.expire(now.plus(2, ChronoUnit.MINUTES)));
 
         LeaveRequest rejected = createPendingRequest(now);
-        rejected.reject(now.plusMinutes(1));
-        assertThrows(LeaveRequestStatusTransitionException.class, () -> rejected.approve(now.plusMinutes(2)));
+        rejected.reject(now.plus(1, ChronoUnit.MINUTES));
+        assertThrows(LeaveRequestStatusTransitionException.class, () -> rejected.approve(now.plus(2, ChronoUnit.MINUTES)));
     }
 
-    private LeaveRequest createPendingRequest(LocalDateTime now) {
+    private LeaveRequest createPendingRequest(Instant now) {
         return LeaveRequest.create(
             LeaveRequestId.fromString("de84f4f3-c5af-4a57-b62f-1ddd12c537d3"),
             TaskId.fromString("5f4ad13f-f5be-4c2f-9f7a-86f0d6108b6e"),

@@ -14,6 +14,9 @@ public final record UserId(UUID value) {
     public static UserId generate() {
         return new UserId(UUID.randomUUID());
     }
+    public static UserId of(UUID value) {
+        return new UserId(value);
+    }
     // If we want to create UserId from string, we can add a static factory method
     public static UserId fromString(String value) {
         if (value==null||value.trim().isEmpty()) {

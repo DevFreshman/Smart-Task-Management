@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailException;
 
-public final record Email(String value) {
+public record Email(String value) {
     private static final Pattern EMAIL_REGEX = Pattern.compile(
         "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +
         "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
@@ -25,6 +25,9 @@ public final record Email(String value) {
     }
     public static Email of(String value) {
         return new Email(value);
+    }
+    public String asString(){
+        return value;
     }
     public String getDomain() {
         return value.substring(value.indexOf('@') + 1);

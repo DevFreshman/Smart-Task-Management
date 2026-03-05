@@ -24,11 +24,8 @@ public enum TaskStatus {
     COMPLETED("Completed"){
         @Override
         public TaskStatus updateStatus(TaskStatus newStatus) {
-            if(newStatus != COMPLETED) {
+            if(newStatus != COMPLETED && newStatus != CANCELLED) {
                 throw new TaskStatusTransitionException("Task is already completed. Cannot transition to " + newStatus);
-            }
-            if(newStatus == CANCELLED){
-                return newStatus;
             }
             return this;
         }

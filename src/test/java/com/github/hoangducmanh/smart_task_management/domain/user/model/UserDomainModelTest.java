@@ -6,7 +6,8 @@ import com.github.hoangducmanh.smart_task_management.domain.user.exception.Inval
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidUserNameException;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -112,10 +113,11 @@ class UserDomainModelTest {
     // BR: Register user applies default business state.
     @Test
     void user_register_shouldSetDefaults() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = User.register(
             UserId.fromString("ab0f7e4d-3b14-44ae-9dd8-15f5673281ad"),
             Email.of("user@example.com"),
+            "Ana",
             HashedPassword.of("hash-value"),
             registeredAt
         );
@@ -129,12 +131,12 @@ class UserDomainModelTest {
     // BR: Changing email resets verification status and updates audit.
     @Test
     void user_shouldChangeEmailAndResetStatusToUnverified() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
-        user.requestEmailVerification(registeredAt.plusMinutes(1));
+        user.requestEmailVerification(registeredAt.plus(1, ChronoUnit.MINUTES));
         assertEquals(EmailStatus.PENDING_VERIFICATION, user.getEmailStatus());
 
-        LocalDateTime changedAt = registeredAt.plusMinutes(2);
+        Instant changedAt = registeredAt.plus(2, ChronoUnit.MINUTES);
         user.changeEmail(Email.of("new@example.com"), changedAt);
 
         assertEquals("new@example.com", user.getEmail().value());
@@ -145,72 +147,73 @@ class UserDomainModelTest {
     // BR: Domain forbids changing to the same email.
     @Test
     void user_shouldThrowWhenChangingToSameEmail() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
 
         assertThrows(
             InvalidEmailException.class,
-            () -> user.changeEmail(Email.of("user@example.com"), registeredAt.plusMinutes(1))
+            () -> user.changeEmail(Email.of("user@example.com"), registeredAt.plus(1, ChronoUnit.MINUTES))
         );
     }
 
     // BR: Verification must follow request -> verify flow.
     @Test
     void user_shouldRequestVerificationThenVerify() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
 
-        user.requestEmailVerification(registeredAt.plusMinutes(1));
+        user.requestEmailVerification(registeredAt.plus(1, ChronoUnit.MINUTES));
         assertEquals(EmailStatus.PENDING_VERIFICATION, user.getEmailStatus());
 
-        user.markEmailAsVerified(registeredAt.plusMinutes(2));
+        user.markEmailAsVerified(registeredAt.plus(2, ChronoUnit.MINUTES));
         assertEquals(EmailStatus.VERIFIED, user.getEmailStatus());
-        assertEquals(registeredAt.plusMinutes(2), user.getAuditInfo().updatedAt());
+        assertEquals(registeredAt.plus(2, ChronoUnit.MINUTES), user.getAuditInfo().updatedAt());
     }
 
     // BR: User name change trims value and updates audit.
     @Test
     void user_shouldChangeNameAndTrim() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
 
-        user.changeName("  Nguyen Van A  ", registeredAt.plusMinutes(1));
+        user.changeName("  Nguyen Van A  ", registeredAt.plus(1, ChronoUnit.MINUTES));
 
         assertEquals("Nguyen Van A", user.getName());
-        assertEquals(registeredAt.plusMinutes(1), user.getAuditInfo().updatedAt());
+        assertEquals(registeredAt.plus(1, ChronoUnit.MINUTES), user.getAuditInfo().updatedAt());
     }
 
     // BR: Blank name is rejected by domain rule.
     @Test
     void user_shouldThrowWhenNameIsBlank() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
 
         assertThrows(
             InvalidUserNameException.class,
-            () -> user.changeName("   ", registeredAt.plusMinutes(1))
+            () -> user.changeName("   ", registeredAt.plus(1, ChronoUnit.MINUTES))
         );
     }
 
     // BR: Role change works once and blocks same-role update.
     @Test
     void user_shouldChangeRoleAndThrowWhenRoleIsSame() {
-        LocalDateTime registeredAt = LocalDateTime.of(2026, 1, 10, 8, 30);
+        Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
 
-        user.changeRole(Role.ADMIN, registeredAt.plusMinutes(1));
+        user.changeRole(Role.ADMIN, registeredAt.plus(1, ChronoUnit.MINUTES));
         assertEquals(Role.ADMIN, user.getRole());
 
         assertThrows(
             InvalidRoleException.class,
-            () -> user.changeRole(Role.ADMIN, registeredAt.plusMinutes(2))
+            () -> user.changeRole(Role.ADMIN, registeredAt.plus(2, ChronoUnit.MINUTES))
         );
     }
 
-    private User createUser(LocalDateTime registeredAt) {
+    private User createUser(Instant registeredAt) {
         return User.register(
             UserId.fromString("ab0f7e4d-3b14-44ae-9dd8-15f5673281ad"),
             Email.of("user@example.com"),
+            "Ana",
             HashedPassword.of("hash-value"),
             registeredAt
         );

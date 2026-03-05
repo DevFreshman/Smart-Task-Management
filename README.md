@@ -167,9 +167,9 @@ Full interactive docs available at **`/swagger-ui.html`** after starting the app
 | Category | Technology |
 |---|---|
 | Language | Java 21 |
-| Framework | Spring Boot 4.0.3 |
+| Framework | Spring Boot 3.5.11 |
 | ORM | Spring Data JPA + Hibernate 6 |
-| Database | PostgreSQL 15 |
+| Database | PostgreSQL 16 |
 | Cache | Redis 7 |
 | Migration | Flyway |
 | Security | Spring Security 6 + JJWT |

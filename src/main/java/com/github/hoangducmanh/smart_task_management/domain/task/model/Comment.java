@@ -1,6 +1,6 @@
 package com.github.hoangducmanh.smart_task_management.domain.task.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 import com.github.hoangducmanh.smart_task_management.domain.shared.AuditInfo;
@@ -38,11 +38,11 @@ public class Comment {
         return auditInfo;
     }
 
-    public static Comment create(CommentId id, UserId authorId, TaskId taskId, ContentComment content, LocalDateTime now) {
+    public static Comment create(CommentId id, UserId authorId, TaskId taskId, ContentComment content, Instant now) {
         return new Comment(id, authorId, taskId, content, AuditInfo.create(now));
     }
 
-    public void delete(LocalDateTime now) {
+    public void delete(Instant now) {
     Objects.requireNonNull(now, "now cannot be null");
     if (auditInfo.isDeleted()) {
         throw new CommentDeleteException("Comment is already deleted");

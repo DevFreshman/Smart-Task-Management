@@ -6,7 +6,7 @@ import com.github.hoangducmanh.smart_task_management.domain.user.exception.Inval
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidUserNameException;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.UserDeletedException;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 
@@ -57,14 +57,14 @@ public class User {
         return role;
     }
 
-    public static User register(UserId id, Email email, HashedPassword hashedPassword,LocalDateTime registeredAt) {
+    public static User register(UserId id, Email email, String name,HashedPassword hashedPassword,Instant registeredAt) {
         AuditInfo auditInfo = AuditInfo.create(registeredAt);
-        return new User(id, email, EmailStatus.UNVERIFIED, hashedPassword, auditInfo, null, Role.USER);
+        return new User(id, email, EmailStatus.UNVERIFIED, hashedPassword, auditInfo, name, Role.USER);
     }
         private void ensureNotDeleted() {
         if (auditInfo.isDeleted()) throw new UserDeletedException("User is deleted");
     }
-    public void changeEmail(Email newEmail,  LocalDateTime changedAt) {
+    public void changeEmail(Email newEmail,  Instant changedAt) {
         ensureNotDeleted();
         Objects.requireNonNull(changedAt, "Changed at cannot be null");
         Objects.requireNonNull(newEmail, "New email cannot be null");
@@ -76,21 +76,21 @@ public class User {
         this.auditInfo = this.auditInfo.update(changedAt);
     }
 
-    public void markEmailAsVerified(LocalDateTime verifiedAt) {
+    public void markEmailAsVerified(Instant verifiedAt) {
         ensureNotDeleted();
         Objects.requireNonNull(verifiedAt, "Verified at cannot be null");
         this.emailStatus = this.emailStatus.verify();
         this.auditInfo = this.auditInfo.update(verifiedAt);
     }
 
-    public void requestEmailVerification(LocalDateTime pendingAt) {
+    public void requestEmailVerification(Instant pendingAt) {
         ensureNotDeleted();
         Objects.requireNonNull(pendingAt, "Pending at cannot be null");
         this.emailStatus = this.emailStatus.requestVerification();
         this.auditInfo = this.auditInfo.update(pendingAt);
     }
     
-    public void changePassword(HashedPassword newHashedPassword, LocalDateTime changedAt) {
+    public void changePassword(HashedPassword newHashedPassword, Instant changedAt) {
         ensureNotDeleted();
         Objects.requireNonNull(changedAt, "Changed at cannot be null");
         Objects.requireNonNull(newHashedPassword, "New hashed password cannot be null");
@@ -98,7 +98,7 @@ public class User {
         this.auditInfo = this.auditInfo.update(changedAt);
     }
 
-    public void changeName(String newName, LocalDateTime changedAt) {
+    public void changeName(String newName, Instant changedAt) {
         ensureNotDeleted();
         Objects.requireNonNull(changedAt, "Changed at cannot be null");
         if(newName == null || newName.trim().isEmpty()) {
@@ -108,7 +108,7 @@ public class User {
         this.auditInfo = this.auditInfo.update(changedAt);
     }
 
-    public void changeRole(Role newRole, LocalDateTime changedAt) {
+    public void changeRole(Role newRole, Instant changedAt) {
         ensureNotDeleted();
         Objects.requireNonNull(newRole, "New role cannot be null");
         Objects.requireNonNull(changedAt, "Changed at cannot be null");

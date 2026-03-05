@@ -1,6 +1,6 @@
 package com.github.hoangducmanh.smart_task_management.domain.task.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 import com.github.hoangducmanh.smart_task_management.domain.shared.AuditInfo;
@@ -14,9 +14,9 @@ public class LeaveRequest {
     private final ReasonLeave reason;
     private LeaveRequestStatus status;
     private AuditInfo auditInfo;
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
 
-    private LeaveRequest(LeaveRequestId id, TaskId taskId, UserId assigneeId, ReasonLeave reason, LeaveRequestStatus status, AuditInfo auditInfo, LocalDateTime expiresAt) {
+    private LeaveRequest(LeaveRequestId id, TaskId taskId, UserId assigneeId, ReasonLeave reason, LeaveRequestStatus status, AuditInfo auditInfo, Instant expiresAt) {
         this.id =Objects.requireNonNull(id, "LeaveRequest ID cannot be null");
         this.taskId = Objects.requireNonNull(taskId, "Task ID cannot be null");
         this.assigneeId = Objects.requireNonNull(assigneeId, "Assignee ID cannot be null");
@@ -44,34 +44,34 @@ public class LeaveRequest {
     public AuditInfo getAuditInfo() {
         return auditInfo;
     }
-    public LocalDateTime getExpiresAt() {
+    public Instant getExpiresAt() {
         return expiresAt;
     }
 
-    public static LeaveRequest create(LeaveRequestId id, TaskId taskId, UserId assigneeId, ReasonLeave reason, LocalDateTime now) {
+    public static LeaveRequest create(LeaveRequestId id, TaskId taskId, UserId assigneeId, ReasonLeave reason, Instant now) {
         AuditInfo auditInfo = AuditInfo.create(now);
-        LocalDateTime expiresAt = now.plusDays(3); // Default expiration time is 3 days
+        Instant expiresAt = now.plusSeconds(3 * 24 * 60 * 60); // Default expiration time is 3 days
         return new LeaveRequest(id, taskId, assigneeId, reason, LeaveRequestStatus.PENDING, auditInfo, expiresAt);
     }
 
-    public boolean isExpired(LocalDateTime now) {
+    public boolean isExpired(Instant now) {
         Objects.requireNonNull(now, "now cannot be null");
         return status == LeaveRequestStatus.PENDING && now.isAfter(expiresAt);
     }
 
-    public void approve(LocalDateTime now) {
+    public void approve(Instant now) {
         ensureStillPending();
         this.status = LeaveRequestStatus.APPROVED;
         this.auditInfo = this.auditInfo.update(now);
     }
 
-    public void reject(LocalDateTime now) {
+    public void reject(Instant now) {
         ensureStillPending();
         this.status = LeaveRequestStatus.REJECTED;
         this.auditInfo = this.auditInfo.update(now);
     }   
 
-    public void expire(LocalDateTime now) {
+    public void expire(Instant now) {
         ensureStillPending();
         this.status = LeaveRequestStatus.EXPIRED;
         this.auditInfo = this.auditInfo.update(now);

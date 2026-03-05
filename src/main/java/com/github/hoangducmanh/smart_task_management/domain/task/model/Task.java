@@ -1,6 +1,8 @@
 package com.github.hoangducmanh.smart_task_management.domain.task.model;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,6 +16,7 @@ import com.github.hoangducmanh.smart_task_management.domain.task.exception.TaskD
 import com.github.hoangducmanh.smart_task_management.domain.task.exception.TaskOwnerNotCanBeAssigneeException;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
 
+
 public class Task {
     private final TaskId id;                // Unique identifier for the task
     private Title title;                 // Title of the task
@@ -22,10 +25,10 @@ public class Task {
     private TaskPriority priority;       // Priority of the task (e.g., LOW, MEDIUM, HIGH, CRITICAL)
     private LocalDateTime deadline;       // Deadline for the task, can be null if no deadline
     private final UserId ownerId;          // ID of the user who owns the task
-    private final HashSet<UserId> assigneeIds;       // IDs of users assigned to the task
+    private final Set<UserId> assigneeIds;       // IDs of users assigned to the task
     private AuditInfo auditInfo;            // Audit information (createdAt, updatedAt, createdBy, updatedBy)
-
-    private Task(TaskId id, Title title, Description description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, UserId ownerId, HashSet<UserId> assigneeIds, AuditInfo auditInfo) {
+    private static final int MAX_ASSIGNEES = 10; // Maximum number of assignees allowed for a task
+    private Task(TaskId id, Title title, Description description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, UserId ownerId, Set<UserId> assigneeIds, AuditInfo auditInfo) {
         this.id = Objects.requireNonNull(id, "Task ID cannot be null");
         this.title = Objects.requireNonNull(title, "Title cannot be null");
         this.description = description; // Description can be null or empty, but we can allow it to be updated later
@@ -68,16 +71,18 @@ public class Task {
     private void ensureNotDeleted() {
     if (auditInfo.isDeleted()) throw new TaskDeleteException("Task is deleted");
   }
-    
-    public static Task create(TaskId id, Title title, Description description, TaskPriority priority, LocalDateTime deadline, UserId ownerId, LocalDateTime createdAt, LocalDateTime now) {
-        if(deadline != null && deadline.isBefore(now)) {
+    private LocalDateTime convertInstantToLocalDateTime(Instant instant) {
+        return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+ }
+    public static Task create(TaskId id, Title title, Description description, TaskPriority priority, LocalDateTime deadline, UserId ownerId, Instant now) {
+        LocalDateTime nowLocal = LocalDateTime.ofInstant(now, ZoneOffset.UTC);
+        if(deadline != null && deadline.isBefore(nowLocal)) {
             throw new DeadlineInPastException("Deadline cannot be in the past"); // throws DeadlineInPastException
         }
-        return new Task(id, title, description, TaskStatus.TODO, priority, deadline, ownerId, new HashSet<>(), AuditInfo.create(createdAt));
+        return new Task(id, title, description, TaskStatus.TODO, priority, deadline, ownerId, new HashSet<>(), AuditInfo.create(now));
     }
-
     // update information of task, except status and assignees
-    public void update(Title title, Description description, TaskPriority priority) {
+    public void update(Title title, Description description, TaskPriority priority, Instant now) {
         ensureNotDeleted();
         if(title != null) {
             this.title = title;
@@ -88,12 +93,17 @@ public class Task {
         if(priority != null) {
             this.priority = priority;
         }
+        this.auditInfo = this.auditInfo.update(now);
+    }
+    public void delete(Instant now) {
+        ensureNotDeleted();
+        this.auditInfo = this.auditInfo.delete(now);
     }
     // change deadline of task, but only allow future deadline or null (remove deadline)
-    public void changeDeadline(LocalDateTime newDeadline, LocalDateTime now) {
+    public void changeDeadline(LocalDateTime newDeadline, Instant now) {
     ensureNotDeleted();
-
-    if (newDeadline != null && newDeadline.isBefore(now)) {
+    LocalDateTime nowLocal = convertInstantToLocalDateTime(now);
+    if (newDeadline != null && newDeadline.isBefore(nowLocal)) {
         throw new DeadlineInPastException("Deadline cannot be in the past");
     }
 
@@ -101,13 +111,13 @@ public class Task {
     this.auditInfo = this.auditInfo.update(now);
     }
     // change status of task, but only allow valid status transition
-    public void changeStatus(TaskStatus newStatus, LocalDateTime now) {
+    public void changeStatus(TaskStatus newStatus, Instant now) {
         Objects.requireNonNull(newStatus, "New status cannot be null");
         ensureNotDeleted();
         this.status = this.status.updateStatus(newStatus); // throws TaskStatusTransitionException if invalid transition
         this.auditInfo = this.auditInfo.update(now);
     }
-    public void assignToUsers(UserId newAssigneeId, LocalDateTime now) {
+    public void assignToUsers(UserId newAssigneeId, Instant now) {
         Objects.requireNonNull(newAssigneeId, "New assignee ID cannot be null");
         ensureNotDeleted();
         if(newAssigneeId.equals(ownerId)) {
@@ -116,13 +126,13 @@ public class Task {
         if(assigneeIds.contains(newAssigneeId)) {
             throw new TaskAssigneeAlreadyExistsException("User is already an assignee of this task");
         }
-        if((assigneeIds.size() >= 10)) {
+        if((assigneeIds.size() >= MAX_ASSIGNEES)) {
             throw new TaskAssigneeLimitExceededException("Task cannot have more than 10 assignees");
         }
         this.assigneeIds.add(newAssigneeId);
         this.auditInfo = this.auditInfo.update(now);
     }
-    public void removeAssignee(UserId assigneeId, LocalDateTime now) {
+    public void removeAssignee(UserId assigneeId, Instant now) {
         Objects.requireNonNull(assigneeId, "Assignee ID cannot be null");
         ensureNotDeleted();
         if(!assigneeIds.contains(assigneeId)) {

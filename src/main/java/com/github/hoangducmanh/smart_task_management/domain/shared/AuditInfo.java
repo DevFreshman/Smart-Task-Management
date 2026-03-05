@@ -1,9 +1,9 @@
 package com.github.hoangducmanh.smart_task_management.domain.shared;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
-public record AuditInfo(LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+public record AuditInfo(Instant createdAt, Instant updatedAt, Instant deletedAt) {
     public AuditInfo{
         if (createdAt == null) {
             throw new IllegalArgumentException("createdAt cannot be null");
@@ -15,15 +15,15 @@ public record AuditInfo(LocalDateTime createdAt, LocalDateTime updatedAt, LocalD
             throw new IllegalArgumentException("deletedAt cannot be before createdAt or updatedAt");
         }
     }
-    public static AuditInfo create(LocalDateTime now) {
+    public static AuditInfo create(Instant now) {
         Objects.requireNonNull(now, "now cannot be null");
         return new AuditInfo(now, now, null);
     }
-    public AuditInfo update(LocalDateTime now) {
+    public AuditInfo update(Instant now) {
         Objects.requireNonNull(now, "now cannot be null");
         return new AuditInfo(this.createdAt, now, this.deletedAt);
     }
-    public AuditInfo delete(LocalDateTime now) {
+    public AuditInfo delete(Instant now) {
         Objects.requireNonNull(now, "now cannot be null");
         return new AuditInfo(this.createdAt, this.updatedAt, now);
     }

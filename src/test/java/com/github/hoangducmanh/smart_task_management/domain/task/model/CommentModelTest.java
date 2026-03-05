@@ -4,7 +4,8 @@ import com.github.hoangducmanh.smart_task_management.domain.task.exception.Comme
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,7 +16,7 @@ class CommentModelTest {
     // BR: Comment creation sets content and initial audit state.
     @Test
     void create_shouldInitializeCommentFieldsAndAuditInfo() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 15, 10, 0);
+        Instant now = Instant.parse("2026-02-15T10:00:00Z");
 
         Comment comment = Comment.create(
             CommentId.fromString("18acc644-a858-426e-93da-6f56866ebfee"),
@@ -34,7 +35,7 @@ class CommentModelTest {
     // BR: Comment can be deleted once; repeated delete is invalid.
     @Test
     void delete_shouldSetDeletedAtAndThrowWhenDeletingTwice() {
-        LocalDateTime now = LocalDateTime.of(2026, 2, 15, 10, 0);
+        Instant now = Instant.parse("2026-02-15T10:00:00Z");
         Comment comment = Comment.create(
             CommentId.fromString("18acc644-a858-426e-93da-6f56866ebfee"),
             UserId.fromString("a6f9f6a1-c2a9-48d7-b4f4-f431f73388cd"),
@@ -43,11 +44,11 @@ class CommentModelTest {
             now
         );
 
-        LocalDateTime deletedAt = now.plusMinutes(5);
+        Instant deletedAt = now.plus(5, ChronoUnit.MINUTES);
         comment.delete(deletedAt);
 
         assertNotNull(comment.getAuditInfo().deletedAt());
         assertEquals(deletedAt, comment.getAuditInfo().deletedAt());
-        assertThrows(CommentDeleteException.class, () -> comment.delete(deletedAt.plusMinutes(1)));
+        assertThrows(CommentDeleteException.class, () -> comment.delete(deletedAt.plus(1, ChronoUnit.MINUTES)));
     }
 }
