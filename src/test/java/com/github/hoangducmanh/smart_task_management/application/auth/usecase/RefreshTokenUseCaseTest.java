@@ -6,9 +6,10 @@ import com.github.hoangducmanh.smart_task_management.application.auth.dto.Refres
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.InvalidTokenException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.RefreshTokenRepository;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.TokenGeneratorPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.TokenHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.AccessTokenGeneratorPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenGeneratorPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.HashedPassword;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.User;
@@ -35,8 +36,9 @@ import static org.mockito.Mockito.when;
 class RefreshTokenUseCaseTest {
 
     private RefreshTokenRepository refreshTokenRepository;
-    private TokenHashPort tokenHashPort;
-    private TokenGeneratorPort tokenGeneratorPort;
+    private RefreshTokenHashPort tokenHashPort;
+    private AccessTokenGeneratorPort accessTokenPort;
+    private RefreshTokenGeneratorPort refreshTokenPort;
     private UserRepository userRepository;
     private ClockSystem clockSystem;
     private RefreshTokenUseCase refreshTokenUseCase;
@@ -47,12 +49,13 @@ class RefreshTokenUseCaseTest {
     @BeforeEach
     void setUp() {
         refreshTokenRepository = mock(RefreshTokenRepository.class);
-        tokenHashPort = mock(TokenHashPort.class);
-        tokenGeneratorPort = mock(TokenGeneratorPort.class);
+        tokenHashPort = mock(RefreshTokenHashPort.class);
+        accessTokenPort = mock(AccessTokenGeneratorPort.class);
+        refreshTokenPort = mock(RefreshTokenGeneratorPort.class);
         userRepository = mock(UserRepository.class);
         clockSystem = mock(ClockSystem.class);
         refreshTokenUseCase = new RefreshTokenUseCase(
-            refreshTokenRepository, tokenHashPort, tokenGeneratorPort, userRepository, clockSystem
+            refreshTokenRepository, tokenHashPort, accessTokenPort, refreshTokenPort, userRepository, clockSystem
         );
     }
 
@@ -68,9 +71,9 @@ class RefreshTokenUseCaseTest {
         when(tokenHashPort.hash("old-refresh-token")).thenReturn("hashed-old-token");
         when(refreshTokenRepository.consumeAndGetUserId("hashed-old-token", NOW)).thenReturn(Optional.of(USER_ID));
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
-        when(tokenGeneratorPort.generateRefreshToken()).thenReturn("new-refresh-token");
+        when(refreshTokenPort.generateRefreshToken()).thenReturn("new-refresh-token");
         when(tokenHashPort.hash("new-refresh-token")).thenReturn("hashed-new-token");
-        when(tokenGeneratorPort.generateAccessToken(UserId.of(USER_ID), user.getRole())).thenReturn("new-access-token");
+        when(accessTokenPort.generateAccessToken(UserId.of(USER_ID), user.getRole())).thenReturn("new-access-token");
 
         RefreshTokenResult result = refreshTokenUseCase.execute(command);
 
@@ -89,7 +92,7 @@ class RefreshTokenUseCaseTest {
         assertEquals(USER_ID, savedToken.userId());
 
         // Verify access token được generate với đúng userId và role
-        verify(tokenGeneratorPort).generateAccessToken(UserId.of(USER_ID), user.getRole());
+        verify(accessTokenPort).generateAccessToken(UserId.of(USER_ID), user.getRole());
     }
 
     // Case: Refresh token không tồn tại hoặc đã hết hạn.
@@ -112,8 +115,8 @@ class RefreshTokenUseCaseTest {
         verify(tokenHashPort).hash("invalid-refresh-token");
         verify(refreshTokenRepository).consumeAndGetUserId("hashed-invalid-token", NOW);
         verifyNoInteractions(userRepository);
-        verify(tokenGeneratorPort, never()).generateRefreshToken();
-        verify(tokenGeneratorPort, never()).generateAccessToken(any(UserId.class), any());
+        verify(refreshTokenPort, never()).generateRefreshToken();
+        verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
         verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class));
     }
 
@@ -137,8 +140,8 @@ class RefreshTokenUseCaseTest {
         assertEquals("User not found for the given refresh token", exception.getMessage());
         verify(refreshTokenRepository).consumeAndGetUserId("hashed-valid-token", NOW);
         verify(userRepository).findById(UserId.of(USER_ID));
-        verify(tokenGeneratorPort, never()).generateRefreshToken();
-        verify(tokenGeneratorPort, never()).generateAccessToken(any(UserId.class), any());
+        verify(refreshTokenPort, never()).generateRefreshToken();
+        verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
         verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class));
     }
 
@@ -153,9 +156,9 @@ class RefreshTokenUseCaseTest {
         when(tokenHashPort.hash("raw-token-value")).thenReturn("deterministic-hash");
         when(refreshTokenRepository.consumeAndGetUserId("deterministic-hash", NOW)).thenReturn(Optional.of(USER_ID));
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
-        when(tokenGeneratorPort.generateRefreshToken()).thenReturn("new-token");
+        when(refreshTokenPort.generateRefreshToken()).thenReturn("new-token");
         when(tokenHashPort.hash("new-token")).thenReturn("new-hash");
-        when(tokenGeneratorPort.generateAccessToken(any(UserId.class), any())).thenReturn("access");
+        when(accessTokenPort.generateAccessToken(any(UserId.class), any())).thenReturn("access");
 
         refreshTokenUseCase.execute(command);
 

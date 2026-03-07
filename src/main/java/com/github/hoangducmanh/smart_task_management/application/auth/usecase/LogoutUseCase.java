@@ -1,11 +1,10 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import java.util.UUID;
-
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.LogoutCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.LogoutPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.RefreshTokenRepository;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
+import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
 
 public class LogoutUseCase implements LogoutPort {
     private final RefreshTokenRepository refreshTokenRepository;
@@ -17,7 +16,7 @@ public class LogoutUseCase implements LogoutPort {
 
     @Override
     public void execute(LogoutCommand command) {
-        UUID userId = command.userId();
-        refreshTokenRepository.revokeByUserId(userId, clockSystem.now());
+        UserId userId = UserId.of(command.userId());
+        refreshTokenRepository.revokeByUserId(userId.value(), clockSystem.now());
     }
 }

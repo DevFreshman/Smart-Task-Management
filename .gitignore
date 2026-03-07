@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-# Environment variables - QUAN TRỌNG NHẤT, không push JWT secret lên GitHub
+# Environment variables
 .env
 .env.local
 .env.*.local

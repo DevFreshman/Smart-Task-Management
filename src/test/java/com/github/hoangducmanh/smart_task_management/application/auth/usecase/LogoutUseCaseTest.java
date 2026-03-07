@@ -2,7 +2,8 @@ package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.LogoutCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.RefreshTokenRepository;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

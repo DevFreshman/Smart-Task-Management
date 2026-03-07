@@ -27,7 +27,7 @@ public enum TaskStatus {
             if(newStatus != COMPLETED && newStatus != CANCELLED) {
                 throw new TaskStatusTransitionException("Task is already completed. Cannot transition to " + newStatus);
             }
-            return this;
+            return newStatus;
         }
     },
     CANCELLED("Cancelled"){

@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management.application.auth.port.out;
+package com.github.hoangducmanh.smart_task_management.application.auth.port.out.password;
 
 public interface PasswordHashPort {
     String encode(String password);

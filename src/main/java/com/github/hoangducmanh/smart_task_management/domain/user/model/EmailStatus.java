@@ -1,16 +1,17 @@
 package com.github.hoangducmanh.smart_task_management.domain.user.model;
 
+import com.github.hoangducmanh.smart_task_management.domain.user.exception.EmailAlreadyVerifyException;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailStatusTransitionException;
 
 public enum EmailStatus {
     VERIFIED("verified"){
         @Override
         public EmailStatus requestVerification() {
-            throw new InvalidEmailStatusTransitionException("Cannot request verification for a verified email");
+            throw new EmailAlreadyVerifyException("Cannot request verification for a verified email");
             }
         @Override
         public EmailStatus verify() {
-            throw new InvalidEmailStatusTransitionException("Email is already verified");
+            throw new EmailAlreadyVerifyException("Email is already verified");
         }},
     UNVERIFIED("unverified"){
         @Override
@@ -25,7 +26,7 @@ public enum EmailStatus {
     PENDING_VERIFICATION("pending_verification"){
         @Override
         public EmailStatus requestVerification() {
-            throw new InvalidEmailStatusTransitionException("Email is already pending verification");
+            return this; // No state change, still pending verification
         }
         @Override
         public EmailStatus verify() {

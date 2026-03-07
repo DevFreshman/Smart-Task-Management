@@ -4,7 +4,7 @@ import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterResult;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailAlreadyExistsException;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.PasswordHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.password.PasswordHashPort;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailException;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;

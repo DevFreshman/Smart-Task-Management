@@ -7,7 +7,7 @@ import com.github.hoangducmanh.smart_task_management.application.auth.dto.Regist
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterResult;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailAlreadyExistsException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.RegisterPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.PasswordHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.password.PasswordHashPort;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.HashedPassword;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.User;
@@ -26,6 +26,7 @@ public class RegisterUseCase implements RegisterPort{
     @Override
     public RegisterResult execute(RegisterCommand registerCommand) {
         Email email = Email.of(registerCommand.email());
+        
         if(userRepository.existsByEmail(email)) throw new EmailAlreadyExistsException("Email already exists");
         HashedPassword hashedPassword = HashedPassword.of(passwordHashPort.encode(registerCommand.password()));
         UserId userId = UserId.generate();

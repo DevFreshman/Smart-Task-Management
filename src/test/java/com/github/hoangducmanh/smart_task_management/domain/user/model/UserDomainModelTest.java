@@ -1,7 +1,9 @@
 package com.github.hoangducmanh.smart_task_management.domain.user.model;
 
+import com.github.hoangducmanh.smart_task_management.domain.user.exception.EmailAlreadyVerifyException;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailException;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailStatusTransitionException;
+import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidHashedPasswordException;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidRoleException;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidUserNameException;
 import org.junit.jupiter.api.Test;
@@ -44,9 +46,9 @@ class UserDomainModelTest {
     @Test
     void emailStatus_shouldThrowOnInvalidTransitions() {
         assertThrows(InvalidEmailStatusTransitionException.class, () -> EmailStatus.UNVERIFIED.verify());
-        assertThrows(InvalidEmailStatusTransitionException.class, () -> EmailStatus.VERIFIED.requestVerification());
-        assertThrows(InvalidEmailStatusTransitionException.class, () -> EmailStatus.VERIFIED.verify());
-        assertThrows(InvalidEmailStatusTransitionException.class, () -> EmailStatus.PENDING_VERIFICATION.requestVerification());
+        assertThrows(EmailAlreadyVerifyException.class, () -> EmailStatus.VERIFIED.requestVerification());
+        assertThrows(EmailAlreadyVerifyException.class, () -> EmailStatus.VERIFIED.verify());
+        assertEquals(EmailStatus.PENDING_VERIFICATION, EmailStatus.PENDING_VERIFICATION.requestVerification());
     }
 
     // OV: EmailStatus parsing from persisted/display text.
@@ -76,8 +78,8 @@ class UserDomainModelTest {
     // OV: HashedPassword rejects null/blank.
     @Test
     void hashedPassword_shouldThrowWhenNullOrBlank() {
-        assertThrows(IllegalArgumentException.class, () -> HashedPassword.of(null));
-        assertThrows(IllegalArgumentException.class, () -> HashedPassword.of("   "));
+        assertThrows(InvalidHashedPasswordException.class, () -> HashedPassword.of(null));
+        assertThrows(InvalidHashedPasswordException.class, () -> HashedPassword.of("   "));
     }
 
     // OV: UserId conversion from/to string representation.

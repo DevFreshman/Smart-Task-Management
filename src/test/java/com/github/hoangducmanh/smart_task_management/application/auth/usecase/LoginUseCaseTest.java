@@ -6,10 +6,11 @@ import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginR
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailNotExistsException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.PasswordMismatchException;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.PasswordHashPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.RefreshTokenRepository;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.TokenGeneratorPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.TokenHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.password.PasswordHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.AccessTokenGeneratorPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenGeneratorPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailException;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.HashedPassword;
@@ -35,8 +36,9 @@ import static org.mockito.Mockito.when;
 class LoginUseCaseTest {
     private RefreshTokenRepository tokenRepository;
     private PasswordHashPort passwordHashPort;
-    private TokenGeneratorPort tokenGeneratorPort;
-    private TokenHashPort tokenHashPort;
+    private AccessTokenGeneratorPort accessTokenPort;
+    private RefreshTokenGeneratorPort refreshTokenPort;
+    private RefreshTokenHashPort tokenHashPort;
     private UserRepository userRepository;
     private ClockSystem clockSystem;
     private LoginUseCase loginUseCase;
@@ -45,13 +47,15 @@ class LoginUseCaseTest {
     void setUp() {
         tokenRepository = mock(RefreshTokenRepository.class);
         passwordHashPort = mock(PasswordHashPort.class);
-        tokenGeneratorPort = mock(TokenGeneratorPort.class);
-        tokenHashPort = mock(TokenHashPort.class);
+        accessTokenPort = mock(AccessTokenGeneratorPort.class);
+        refreshTokenPort = mock(RefreshTokenGeneratorPort.class);
+        tokenHashPort = mock(RefreshTokenHashPort.class);
         userRepository = mock(UserRepository.class);
         clockSystem = mock(ClockSystem.class);
         loginUseCase = new LoginUseCase(
             tokenRepository,
-            tokenGeneratorPort,
+            accessTokenPort,
+            refreshTokenPort,
             passwordHashPort,
             tokenHashPort,
             userRepository,
@@ -75,9 +79,9 @@ class LoginUseCaseTest {
 
         when(userRepository.findByEmail(any(Email.class))).thenReturn(Optional.of(user));
         when(passwordHashPort.matches("raw-password", "stored-hash")).thenReturn(true);
-        when(tokenGeneratorPort.generateRefreshToken()).thenReturn("refresh-token");
+        when(refreshTokenPort.generateRefreshToken()).thenReturn("refresh-token");
         when(tokenHashPort.hash("refresh-token")).thenReturn("refresh-token-hash");
-        when(tokenGeneratorPort.generateAccessToken(user.getId(), user.getRole())).thenReturn("access-token");
+        when(accessTokenPort.generateAccessToken(user.getId(), user.getRole())).thenReturn("access-token");
         when(clockSystem.now()).thenReturn(now);
 
         LoginResult result = loginUseCase.execute(command);
@@ -95,7 +99,7 @@ class LoginUseCaseTest {
         assertEquals("refresh-token-hash", savedToken.hashToken());
         assertEquals(user.getId().value(), savedToken.userId());
 
-        verify(tokenGeneratorPort).generateAccessToken(user.getId(), user.getRole());
+        verify(accessTokenPort).generateAccessToken(user.getId(), user.getRole());
         assertEquals("access-token", result.accessToken());
         assertEquals("refresh-token", result.refreshToken());
     }
@@ -114,7 +118,7 @@ class LoginUseCaseTest {
 
         assertEquals("Email not exists", exception.getMessage());
         verify(userRepository).findByEmail(Email.of("user@example.com"));
-        verifyNoInteractions(passwordHashPort, tokenGeneratorPort, tokenHashPort, tokenRepository);
+        verifyNoInteractions(passwordHashPort, accessTokenPort, refreshTokenPort, tokenHashPort, tokenRepository);
     }
 
     // Case: Sai mật khẩu.
@@ -139,8 +143,8 @@ class LoginUseCaseTest {
 
         assertEquals("Password does not match", exception.getMessage());
         verify(passwordHashPort).matches("wrong-password", "stored-hash");
-        verify(tokenGeneratorPort, never()).generateRefreshToken();
-        verify(tokenGeneratorPort, never()).generateAccessToken(any(UserId.class), any());
+        verify(refreshTokenPort, never()).generateRefreshToken();
+        verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
         verifyNoInteractions(tokenHashPort, tokenRepository);
     }
 
@@ -152,6 +156,6 @@ class LoginUseCaseTest {
 
         assertThrows(InvalidEmailException.class, () -> loginUseCase.execute(command));
 
-        verifyNoInteractions(userRepository, passwordHashPort, tokenGeneratorPort, tokenHashPort, tokenRepository);
+        verifyNoInteractions(userRepository, passwordHashPort, accessTokenPort, refreshTokenPort, tokenHashPort, tokenRepository);
     }
 }
