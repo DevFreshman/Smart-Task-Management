@@ -21,7 +21,7 @@ public class Task {
     private final TaskId id;                // Unique identifier for the task
     private Title title;                 // Title of the task
     private Description description;     // Description of the task
-    private TaskStatus status;           // Status of the task (e.g., TODO, IN_PROGRESS, COMPLETED)
+    private TaskStatus status;           // Status of the task
     private TaskPriority priority;       // Priority of the task (e.g., LOW, MEDIUM, HIGH, CRITICAL)
     private LocalDateTime deadline;       // Deadline for the task, can be null if no deadline
     private final UserId ownerId;          // ID of the user who owns the task

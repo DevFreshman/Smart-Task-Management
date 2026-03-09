@@ -1,12 +1,11 @@
 package com.github.hoangducmanh.smart_task_management.domain.user.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public final record UserId(UUID value) {
     public UserId {
-        if (value == null) {
-            throw new IllegalArgumentException("UserId cannot be null");
-        }
+        Objects.requireNonNull(value, "UserId value cannot be null");
         if(value.equals(new UUID(0, 0))) {
             throw new IllegalArgumentException("UserId cannot be empty");
         }

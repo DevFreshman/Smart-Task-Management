@@ -11,15 +11,15 @@ import java.util.Objects;
 
 
 public class User {
-    private final UserId id;                // Unique identifier for the user
-    private Email email;                    // User's email address, can be updated
-    private EmailStatus emailStatus;        // Status of the user's email (e.g., verified, unverified, pending verification)
-    private HashedPassword hashedPassword;  // User's hashed password, can be updated
+    private final UserId id;                
+    private Email email;                    
+    private EmailStatus emailStatus;        // Status of the user's email (verified, unverified, pending verification)
+    private HashedPassword hashedPassword;  
     private AuditInfo auditInfo;            // Audit information (createdAt, updatedAt, createdBy, updatedBy)
-    private String name;                    // User's full name, can be updated
-    private Role role;                      // User's role (e.g., admin, user), can be updated 
-    
-    private User(UserId id, Email email, EmailStatus emailStatus, HashedPassword hashedPassword, AuditInfo auditInfo, String name, Role role) {
+    private String name;                    
+    private UserRole role;                      // User's role (admin, user), can be updated 
+
+    private User(UserId id, Email email, EmailStatus emailStatus, HashedPassword hashedPassword, AuditInfo auditInfo, String name, UserRole role) {
         this.id = Objects.requireNonNull(id, "User ID cannot be null");
         this.email = Objects.requireNonNull(email, "Email cannot be null");
         this.emailStatus = Objects.requireNonNull(emailStatus, "Email status cannot be null");
@@ -53,13 +53,24 @@ public class User {
         return name;
     }
 
-    public Role getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public static User register(UserId id, Email email, String name,HashedPassword hashedPassword,Instant registeredAt) {
+    public static User reconstitute(UserId id, Email email, EmailStatus emailStatus, HashedPassword hashedPassword, AuditInfo auditInfo, String name, UserRole role) {
+        return new User(id, email, emailStatus, hashedPassword, auditInfo, normalizeNullableName(name), role);
+    }
+    
+    public static User register(UserId id, Email email, String name, HashedPassword hashedPassword, Instant registeredAt) {
         AuditInfo auditInfo = AuditInfo.create(registeredAt);
-        return new User(id, email, EmailStatus.UNVERIFIED, hashedPassword, auditInfo, name, Role.USER);
+        String normalizedName = normalizeNullableName(name);
+        return new User(id, email, EmailStatus.UNVERIFIED, hashedPassword, auditInfo, normalizedName, UserRole.USER);
+    }
+
+    private static String normalizeNullableName(String name) {
+        if (name == null) return null;
+        String trimmed = name.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
         private void ensureNotDeleted() {
         if (auditInfo.isDeleted()) throw new UserDeletedException("User is deleted");
@@ -108,7 +119,7 @@ public class User {
         this.auditInfo = this.auditInfo.update(changedAt);
     }
 
-    public void changeRole(Role newRole, Instant changedAt) {
+    public void changeRole(UserRole newRole, Instant changedAt) {
         ensureNotDeleted();
         Objects.requireNonNull(newRole, "New role cannot be null");
         Objects.requireNonNull(changedAt, "Changed at cannot be null");

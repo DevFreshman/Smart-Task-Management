@@ -62,9 +62,9 @@ class UserDomainModelTest {
     // OV: Role parsing from role name.
     @Test
     void role_shouldParseFromRoleNameIgnoringCase() {
-        assertEquals(Role.ADMIN, Role.fromRoleName("ADMIN"));
-        assertEquals(Role.USER, Role.fromRoleName("user"));
-        assertThrows(IllegalArgumentException.class, () -> Role.fromRoleName("manager"));
+        assertEquals(UserRole.ADMIN, UserRole.fromRoleName("ADMIN"));
+        assertEquals(UserRole.USER, UserRole.fromRoleName("user"));
+        assertThrows(IllegalArgumentException.class, () -> UserRole.fromRoleName("manager"));
     }
 
     // OV: HashedPassword trims incoming value.
@@ -125,7 +125,7 @@ class UserDomainModelTest {
         );
 
         assertEquals(EmailStatus.UNVERIFIED, user.getEmailStatus());
-        assertEquals(Role.USER, user.getRole());
+        assertEquals(UserRole.USER, user.getRole());
         assertEquals(registeredAt, user.getAuditInfo().createdAt());
         assertEquals(registeredAt, user.getAuditInfo().updatedAt());
     }
@@ -202,12 +202,12 @@ class UserDomainModelTest {
         Instant registeredAt = Instant.parse("2026-01-10T08:30:00Z");
         User user = createUser(registeredAt);
 
-        user.changeRole(Role.ADMIN, registeredAt.plus(1, ChronoUnit.MINUTES));
-        assertEquals(Role.ADMIN, user.getRole());
+        user.changeRole(UserRole.ADMIN, registeredAt.plus(1, ChronoUnit.MINUTES));
+        assertEquals(UserRole.ADMIN, user.getRole());
 
         assertThrows(
             InvalidRoleException.class,
-            () -> user.changeRole(Role.ADMIN, registeredAt.plus(2, ChronoUnit.MINUTES))
+            () -> user.changeRole(UserRole.ADMIN, registeredAt.plus(2, ChronoUnit.MINUTES))
         );
     }
 

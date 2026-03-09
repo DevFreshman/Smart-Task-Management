@@ -15,6 +15,10 @@ public record AuditInfo(Instant createdAt, Instant updatedAt, Instant deletedAt)
             throw new IllegalArgumentException("deletedAt cannot be before createdAt or updatedAt");
         }
     }
+    public static AuditInfo of(Instant createdAt, Instant updatedAt, Instant deletedAt) {
+        return new AuditInfo(createdAt, updatedAt, deletedAt);
+    }
+
     public static AuditInfo create(Instant now) {
         Objects.requireNonNull(now, "now cannot be null");
         return new AuditInfo(now, now, null);

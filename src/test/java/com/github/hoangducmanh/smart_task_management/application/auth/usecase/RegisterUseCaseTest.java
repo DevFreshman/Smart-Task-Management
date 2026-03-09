@@ -9,7 +9,7 @@ import com.github.hoangducmanh.smart_task_management.domain.user.exception.Inval
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.HashedPassword;
-import com.github.hoangducmanh.smart_task_management.domain.user.model.Role;
+import com.github.hoangducmanh.smart_task_management.domain.user.model.UserRole;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.User;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
 import com.github.hoangducmanh.smart_task_management.domain.user.repository.UserRepository;
@@ -71,7 +71,7 @@ class RegisterUseCaseTest {
         assertEquals("hashed-password", savedUser.getHashedPassword().value());
         assertEquals("John Doe", savedUser.getName());
         assertEquals(EmailStatus.UNVERIFIED, savedUser.getEmailStatus());
-        assertEquals(Role.USER, savedUser.getRole());
+        assertEquals(UserRole.USER, savedUser.getRole());
         assertEquals(now, savedUser.getAuditInfo().createdAt());
         assertEquals(now, savedUser.getAuditInfo().updatedAt());
 

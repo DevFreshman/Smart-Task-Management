@@ -1,11 +1,11 @@
 package com.github.hoangducmanh.smart_task_management.domain.user.model;
 
-public enum Role {
+public enum UserRole {
     ADMIN("admin"),
     USER("user");
     private final String roleName;
 
-    Role(String roleName) {
+    UserRole(String roleName) {
         this.roleName = roleName;
     }
 
@@ -13,8 +13,8 @@ public enum Role {
         return roleName;
     }
 
-    public static Role fromRoleName(String roleName) {
-        for (Role role : values()) {
+    public static UserRole fromRoleName(String roleName) {
+        for (UserRole role : values()) {
             if (role.roleName.equalsIgnoreCase(roleName)) {
                 return role;
             }

@@ -1,141 +1,189 @@
 -- V1__init_schema.sql
 
--- 1) Extensions (UUID generator)
+BEGIN;
+
+------------------------------------------------
+-- 1) Extension
+------------------------------------------------
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- 2) ENUM types
-DO $$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
-    CREATE TYPE user_role AS ENUM ('ADMIN', 'USER');
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'email_status') THEN
-    CREATE TYPE email_status AS ENUM ('UNVERIFIED', 'VERIFIED', 'PENDING_VERIFICATION');
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
-    CREATE TYPE task_status AS ENUM ('TODO', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED');
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_priority') THEN
-    CREATE TYPE task_priority AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'leave_request_status') THEN
-    CREATE TYPE leave_request_status AS ENUM ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED');
-  END IF;
-END$$;
-
--- 3) Tables
-
--- USER
+------------------------------------------------
+-- 2) USERS
+------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
-  user_id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  name            VARCHAR(255) NULL,
-  email           VARCHAR(255) NOT NULL,
-  email_status    email_status NOT NULL DEFAULT 'UNVERIFIED',
-  hashed_password VARCHAR(255) NOT NULL,
-  role            user_role NOT NULL DEFAULT 'USER',
+    user_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name             VARCHAR(255) NULL,
+    email            VARCHAR(255) NOT NULL,
+    email_status     VARCHAR(50) NOT NULL DEFAULT 'UNVERIFIED',
+    hashed_password  VARCHAR(255) NOT NULL,
+    role             VARCHAR(50) NOT NULL DEFAULT 'USER',
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at       TIMESTAMPTZ NULL,
 
-  create_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
-  update_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
-  delete_at       TIMESTAMPTZ NULL,
-
-  CONSTRAINT uq_users_email UNIQUE (email)
+    CONSTRAINT chk_users_email_status
+        CHECK (email_status IN ('UNVERIFIED', 'VERIFIED', 'PENDING_VERIFICATION')),
+    CONSTRAINT chk_users_role
+        CHECK (role IN ('ADMIN', 'USER'))
 );
 
--- TASK
+-- unique email only for active users
+CREATE UNIQUE INDEX IF NOT EXISTS uq_users_email_active
+    ON users (email)
+    WHERE deleted_at IS NULL;
+
+------------------------------------------------
+-- 3) TASKS
+------------------------------------------------
 CREATE TABLE IF NOT EXISTS tasks (
-  task_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  owner_id      UUID NOT NULL,
-  title         VARCHAR(255) NOT NULL,
-  description   TEXT NULL,
-  task_status   task_status NOT NULL DEFAULT 'TODO',
-  task_priority task_priority NOT NULL DEFAULT 'MEDIUM',
-  deadline      TIMESTAMPTZ NULL,
+    task_id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    owner_id         UUID NOT NULL,
+    title            VARCHAR(255) NOT NULL,
+    description      TEXT NULL,
+    task_status      VARCHAR(50) NOT NULL DEFAULT 'TODO',
+    task_priority    VARCHAR(50) NOT NULL DEFAULT 'MEDIUM',
+    deadline         TIMESTAMP NULL,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at       TIMESTAMPTZ NULL,
 
-  create_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
-  update_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
-  delete_at     TIMESTAMPTZ NULL,
+    CONSTRAINT fk_tasks_owner
+        FOREIGN KEY (owner_id) REFERENCES users(user_id),
 
-  CONSTRAINT fk_tasks_owner FOREIGN KEY (owner_id) REFERENCES users(user_id)
+    CONSTRAINT chk_tasks_status
+        CHECK (task_status IN ('TODO', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED')),
+
+    CONSTRAINT chk_tasks_priority
+        CHECK (task_priority IN ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL'))
 );
 
--- ASSIGNEE_TASK (many-to-many)
+------------------------------------------------
+-- 4) ASSIGNEE_TASK (many-to-many)
+------------------------------------------------
 CREATE TABLE IF NOT EXISTS assignee_task (
-  task_id     UUID NOT NULL,
-  assignee_id UUID NOT NULL,
+    task_id          UUID NOT NULL,
+    assignee_id      UUID NOT NULL,
 
-  CONSTRAINT pk_assignee_task PRIMARY KEY (task_id, assignee_id),
-  CONSTRAINT fk_assignee_task_task FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE,
-  CONSTRAINT fk_assignee_task_user FOREIGN KEY (assignee_id) REFERENCES users(user_id)
+    CONSTRAINT pk_assignee_task
+        PRIMARY KEY (task_id, assignee_id),
+
+    CONSTRAINT fk_assignee_task_task
+        FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE,
+
+    CONSTRAINT fk_assignee_task_user
+        FOREIGN KEY (assignee_id) REFERENCES users(user_id)
 );
 
--- COMMENT
+------------------------------------------------
+-- 5) COMMENTS
+------------------------------------------------
 CREATE TABLE IF NOT EXISTS comments (
-  comment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id    UUID NOT NULL,
-  task_id    UUID NOT NULL,
-  content    TEXT NOT NULL,
+    comment_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id          UUID NOT NULL,
+    task_id          UUID NOT NULL,
+    content          TEXT NOT NULL,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at       TIMESTAMPTZ NULL,
 
-  create_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  update_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  delete_at  TIMESTAMPTZ NULL,
+    CONSTRAINT fk_comments_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
 
-  CONSTRAINT fk_comments_user FOREIGN KEY (user_id) REFERENCES users(user_id),
-  CONSTRAINT fk_comments_task FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE
+    CONSTRAINT fk_comments_task
+        FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE
 );
 
--- LEAVE_REQUEST
-CREATE TABLE IF NOT EXISTS leave_request (
-  leave_request_id     UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  task_id              UUID NOT NULL,
-  user_id              UUID NOT NULL,
-  reason               TEXT NULL,
-  leave_request_status leave_request_status NOT NULL DEFAULT 'PENDING',
+------------------------------------------------
+-- 6) LEAVE_REQUESTS
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS leave_requests (
+    leave_request_id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    task_id               UUID NOT NULL,
+    user_id               UUID NOT NULL,
+    reason                TEXT NULL,
+    leave_request_status  VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at            TIMESTAMPTZ NULL,
+    expires_at            TIMESTAMPTZ NOT NULL,
 
-  create_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
-  update_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
-  delete_at            TIMESTAMPTZ NULL,
-  expire_at            TIMESTAMPTZ NOT NULL,
+    CONSTRAINT fk_leave_requests_task
+        FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE,
 
-  CONSTRAINT fk_leave_task FOREIGN KEY (task_id) REFERENCES tasks(task_id) ON DELETE CASCADE,
-  CONSTRAINT fk_leave_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+    CONSTRAINT fk_leave_requests_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id),
+
+    CONSTRAINT chk_leave_requests_status
+        CHECK (leave_request_status IN ('PENDING', 'APPROVED', 'REJECTED', 'EXPIRED'))
 );
 
--- REFRESH TOKEN
-CREATE TABLE IF NOT EXISTS refresh_token (
-  refresh_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id    UUID NOT NULL,
-  hash_token VARCHAR(255) NOT NULL,
-  is_revoked BOOLEAN NOT NULL DEFAULT FALSE,
-  create_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  expire_at  TIMESTAMPTZ NOT NULL,
+-- only one active pending leave request per (task_id, user_id)
+CREATE UNIQUE INDEX IF NOT EXISTS uq_leave_requests_pending_per_task_user
+    ON leave_requests (task_id, user_id)
+    WHERE leave_request_status = 'PENDING' AND deleted_at IS NULL;
 
-  CONSTRAINT fk_refresh_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+------------------------------------------------
+-- 7) REFRESH TOKENS
+------------------------------------------------
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    token_hash       VARCHAR(255) PRIMARY KEY,
+    user_id          UUID NOT NULL,
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at       TIMESTAMPTZ NOT NULL,
+    revoked_at       TIMESTAMPTZ NULL,
+
+    CONSTRAINT fk_refresh_tokens_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- 4) Indexes (list/filter/pagination/search cơ bản)
+------------------------------------------------
+-- 8) Indexes for common queries
+------------------------------------------------
 
--- tasks listing
-CREATE INDEX IF NOT EXISTS idx_tasks_owner_id ON tasks(owner_id);
-CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(task_status);
-CREATE INDEX IF NOT EXISTS idx_tasks_deadline ON tasks(deadline);
+-- tasks
+CREATE INDEX IF NOT EXISTS idx_tasks_owner_id
+    ON tasks (owner_id);
 
--- comments listing
-CREATE INDEX IF NOT EXISTS idx_comments_task_id ON comments(task_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status
+    ON tasks (task_status);
 
--- leave_request lookup
-CREATE INDEX IF NOT EXISTS idx_leave_task_id ON leave_request(task_id);
-CREATE INDEX IF NOT EXISTS idx_leave_user_id ON leave_request(user_id);
-CREATE INDEX IF NOT EXISTS idx_leave_status ON leave_request(leave_request_status);
+CREATE INDEX IF NOT EXISTS idx_tasks_priority
+    ON tasks (task_priority);
 
--- refresh token lookup
-CREATE INDEX IF NOT EXISTS idx_refresh_user_id ON refresh_token(user_id);
-CREATE UNIQUE INDEX IF NOT EXISTS uq_refresh_hash_token ON refresh_token(hash_token);
+CREATE INDEX IF NOT EXISTS idx_tasks_deadline
+    ON tasks (deadline);
 
--- Optional: chỉ cho phép 1 request PENDING cho mỗi (task_id, user_id) và chưa soft-delete
-CREATE UNIQUE INDEX IF NOT EXISTS uq_leave_pending_per_task_user
-ON leave_request(task_id, user_id)
-WHERE leave_request_status = 'PENDING' AND delete_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_tasks_owner_status
+    ON tasks (owner_id, task_status);
+
+-- comments
+CREATE INDEX IF NOT EXISTS idx_comments_task_id
+    ON comments (task_id);
+
+CREATE INDEX IF NOT EXISTS idx_comments_user_id
+    ON comments (user_id);
+
+-- leave requests
+CREATE INDEX IF NOT EXISTS idx_leave_requests_task_id
+    ON leave_requests (task_id);
+
+CREATE INDEX IF NOT EXISTS idx_leave_requests_user_id
+    ON leave_requests (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_leave_requests_status
+    ON leave_requests (leave_request_status);
+
+CREATE INDEX IF NOT EXISTS idx_leave_requests_expires_at
+    ON leave_requests (expires_at);
+
+-- refresh tokens
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id
+    ON refresh_tokens (user_id);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_expires_at
+    ON refresh_tokens (expires_at);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_revoked_at
+    ON refresh_tokens (revoked_at);
+
+COMMIT;
