@@ -54,7 +54,7 @@ public class LoginUseCase implements LoginPort {
         String refreshToken = refreshTokenPort.generateRefreshToken();
         String hashRefreshToken = tokenHashPort.hash(refreshToken);
         tokenRepository.revokeByUserId(userId.value(), clockSystem.now());
-        tokenRepository.save(StoredRefreshToken.of(hashRefreshToken, userId.value()));
+        tokenRepository.save(StoredRefreshToken.of(hashRefreshToken, userId.value()), clockSystem.now());
         String accessToken = accessTokenPort.generateAccessToken(userId, user.getRole());
         return LoginResult.of(accessToken, refreshToken);
     }

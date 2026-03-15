@@ -86,7 +86,7 @@ class RefreshTokenUseCaseTest {
 
         // Verify refresh token mới được hash và save đúng
         ArgumentCaptor<StoredRefreshToken> tokenCaptor = ArgumentCaptor.forClass(StoredRefreshToken.class);
-        verify(refreshTokenRepository).save(tokenCaptor.capture());
+        verify(refreshTokenRepository).save(tokenCaptor.capture(), clockSystem.now());
         StoredRefreshToken savedToken = tokenCaptor.getValue();
         assertEquals("hashed-new-token", savedToken.hashToken());
         assertEquals(USER_ID, savedToken.userId());
@@ -117,7 +117,7 @@ class RefreshTokenUseCaseTest {
         verifyNoInteractions(userRepository);
         verify(refreshTokenPort, never()).generateRefreshToken();
         verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
-        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class));
+        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class), clockSystem.now());
     }
 
     // Case: User không tồn tại (đã bị xóa sau khi token được cấp).
@@ -142,7 +142,7 @@ class RefreshTokenUseCaseTest {
         verify(userRepository).findById(UserId.of(USER_ID));
         verify(refreshTokenPort, never()).generateRefreshToken();
         verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
-        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class));
+        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class), clockSystem.now());
     }
 
     // Case: Verify token cũ được hash trước khi gửi đến repository.
@@ -164,7 +164,7 @@ class RefreshTokenUseCaseTest {
 
         // Verify raw token KHÔNG được truyền trực tiếp — chỉ hash mới được dùng
         verify(refreshTokenRepository).consumeAndGetUserId(eq("deterministic-hash"), eq(NOW));
-        verify(refreshTokenRepository, never()).consumeAndGetUserId(eq("raw-token-value"), any());
+        verify(refreshTokenRepository, never()).consumeAndGetUserId(eq("raw-token-value"), eq(NOW));
     }
 
     private User createUser() {

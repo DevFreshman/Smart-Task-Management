@@ -50,7 +50,7 @@ public class RefreshTokenUseCase implements RefreshTokenPort {
         String newRefreshToken = refreshTokenGeneratorPort.generateRefreshToken();
         String hashNewRefreshToken = tokenHashPort.hash(newRefreshToken);
         StoredRefreshToken newStoredRefreshToken = StoredRefreshToken.of(hashNewRefreshToken, userId);
-        refreshTokenRepository.save(newStoredRefreshToken);
+        refreshTokenRepository.save(newStoredRefreshToken, clockSystem.now());
         String newAccessToken = accessTokenGeneratorPort.generateAccessToken(UserId.of(userId), user.getRole());
         return RefreshTokenResult.of(newAccessToken, newRefreshToken);
     }

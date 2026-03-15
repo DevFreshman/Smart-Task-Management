@@ -94,7 +94,7 @@ class LoginUseCaseTest {
         verify(tokenRepository).revokeByUserId(user.getId().value(), now);
 
         ArgumentCaptor<StoredRefreshToken> savedTokenCaptor = ArgumentCaptor.forClass(StoredRefreshToken.class);
-        verify(tokenRepository).save(savedTokenCaptor.capture());
+        verify(tokenRepository).save(savedTokenCaptor.capture(), clockSystem.now());
         StoredRefreshToken savedToken = savedTokenCaptor.getValue();
         assertEquals("refresh-token-hash", savedToken.hashToken());
         assertEquals(user.getId().value(), savedToken.userId());

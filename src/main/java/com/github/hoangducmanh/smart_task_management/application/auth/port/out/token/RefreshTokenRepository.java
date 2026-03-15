@@ -8,6 +8,6 @@ import com.github.hoangducmanh.smart_task_management.application.auth.dto.Stored
 
 public interface RefreshTokenRepository {
     Optional<UUID> consumeAndGetUserId(String hashRefresh, Instant now);
-    StoredRefreshToken save(StoredRefreshToken refreshToken);
+    void save(StoredRefreshToken refreshToken, Instant now);
     void revokeByUserId(UUID userId, Instant now);
 }

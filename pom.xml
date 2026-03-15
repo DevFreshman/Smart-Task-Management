@@ -42,63 +42,93 @@
 	</dependencyManagement>
 	<dependencies>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
-		<!-- Test Dependencies -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter</artifactId>
+	</dependency>
+	<!-- Test Dependencies -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
 
-		<dependency>
-    		<groupId>org.testcontainers</groupId>
-    		<artifactId>junit-jupiter</artifactId>
-    		<scope>test</scope>
- 		</dependency>
+	<dependency>
+    	<groupId>org.testcontainers</groupId>
+    	<artifactId>junit-jupiter</artifactId>
+    	<scope>test</scope>
+ 	</dependency>
 
-  		<dependency>
-    		<groupId>org.testcontainers</groupId>
-    		<artifactId>postgresql</artifactId>
-    		<scope>test</scope>
-  		</dependency>
+  	<dependency>
+    	<groupId>org.testcontainers</groupId>
+    	<artifactId>postgresql</artifactId>
+    	<scope>test</scope>
+  	</dependency>
 
-		 <!-- Spring Data JPA -->
-    	<dependency>
-        	<groupId>org.springframework.boot</groupId>
-        	<artifactId>spring-boot-starter-data-jpa</artifactId>
-   		</dependency>
+	<!-- Spring Data JPA -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+   	</dependency>
 
-		<!-- Flyway -->
-		<dependency>
-  			<groupId>org.flywaydb</groupId>
-  			<artifactId>flyway-core</artifactId>
-		</dependency>
+	<!-- Flyway -->
+	<dependency>
+  		<groupId>org.flywaydb</groupId>
+  		<artifactId>flyway-core</artifactId>
+	</dependency>
 		
-		<dependency>
- 			<groupId>org.flywaydb</groupId>
-  			<artifactId>flyway-database-postgresql</artifactId>
-		</dependency>
+	<dependency>
+ 		<groupId>org.flywaydb</groupId>
+  		<artifactId>flyway-database-postgresql</artifactId>
+	</dependency>
 
-		<!-- Postgresql -->
-		<dependency>
-    		<groupId>org.postgresql</groupId>
-    		<artifactId>postgresql</artifactId>
-		</dependency>
+	<!-- Postgresql -->
+	<dependency>
+    	<groupId>org.postgresql</groupId>
+    	<artifactId>postgresql</artifactId>
+	</dependency>
 
 	<!-- Lombok -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<scope>annotationProcessor</scope>
-		</dependency>
+	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<scope>provided</scope>
+	</dependency>
+	<!-- Spring Security -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-security</artifactId>
+	</dependency>
+	<!-- Spring Web -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+	<!-- jjwt -->
+	<dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.12.5</version>
+    </dependency>
+
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.12.5</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.12.5</version>
+        <scope>runtime</scope>
+    </dependency>
 	</dependencies>
 
 	<build>
