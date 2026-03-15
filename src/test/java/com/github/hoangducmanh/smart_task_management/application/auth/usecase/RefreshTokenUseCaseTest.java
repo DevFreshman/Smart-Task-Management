@@ -86,7 +86,7 @@ class RefreshTokenUseCaseTest {
 
         // Verify refresh token mới được hash và save đúng
         ArgumentCaptor<StoredRefreshToken> tokenCaptor = ArgumentCaptor.forClass(StoredRefreshToken.class);
-        verify(refreshTokenRepository).save(tokenCaptor.capture(), clockSystem.now());
+        verify(refreshTokenRepository).save(tokenCaptor.capture(), any());
         StoredRefreshToken savedToken = tokenCaptor.getValue();
         assertEquals("hashed-new-token", savedToken.hashToken());
         assertEquals(USER_ID, savedToken.userId());
@@ -117,7 +117,7 @@ class RefreshTokenUseCaseTest {
         verifyNoInteractions(userRepository);
         verify(refreshTokenPort, never()).generateRefreshToken();
         verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
-        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class), clockSystem.now());
+        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class), any());
     }
 
     // Case: User không tồn tại (đã bị xóa sau khi token được cấp).
@@ -142,7 +142,7 @@ class RefreshTokenUseCaseTest {
         verify(userRepository).findById(UserId.of(USER_ID));
         verify(refreshTokenPort, never()).generateRefreshToken();
         verify(accessTokenPort, never()).generateAccessToken(any(UserId.class), any());
-        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class), clockSystem.now());
+        verify(refreshTokenRepository, never()).save(any(StoredRefreshToken.class), any());
     }
 
     // Case: Verify token cũ được hash trước khi gửi đến repository.

@@ -27,6 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -94,7 +95,7 @@ class LoginUseCaseTest {
         verify(tokenRepository).revokeByUserId(user.getId().value(), now);
 
         ArgumentCaptor<StoredRefreshToken> savedTokenCaptor = ArgumentCaptor.forClass(StoredRefreshToken.class);
-        verify(tokenRepository).save(savedTokenCaptor.capture(), clockSystem.now());
+        verify(tokenRepository).save(savedTokenCaptor.capture(), eq(now));
         StoredRefreshToken savedToken = savedTokenCaptor.getValue();
         assertEquals("refresh-token-hash", savedToken.hashToken());
         assertEquals(user.getId().value(), savedToken.userId());
