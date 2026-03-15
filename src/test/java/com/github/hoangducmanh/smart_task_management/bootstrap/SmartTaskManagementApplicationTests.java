@@ -9,7 +9,11 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest
+@SpringBootTest(properties = {
+    "JWT_SECRET_KEY=test-secret-key-for-testing-only-must-be-long-enough-256bits",
+    "JWT_EXPIRATION_MS=900000",
+    "REFRESH_TOKEN_EXPIRATION_MS=604800000"
+})
 class SmartTaskManagementApplicationTests {
 
 	@Container

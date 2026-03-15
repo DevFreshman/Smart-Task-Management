@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class RefreshTokenJDBCRepositoryImpl implements RefreshTokenRepositoryCustom {
+public class RefreshTokenJpaRepositoryImpl implements RefreshTokenRepositoryCustom {
 
     private final JdbcTemplate jdbcTemplate;
 
