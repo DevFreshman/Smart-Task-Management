@@ -4,12 +4,16 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.stereotype.Repository;
+
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
 @RequiredArgsConstructor
+@Repository
 public class JpaRefreshTokenAdapter implements RefreshTokenRepository {
 
     private final RefreshTokenJpaRepository refreshTokenJpaRepository;
