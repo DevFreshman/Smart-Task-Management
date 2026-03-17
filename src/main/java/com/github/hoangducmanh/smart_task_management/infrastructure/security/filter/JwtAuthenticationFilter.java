@@ -1,15 +1,17 @@
 package com.github.hoangducmanh.smart_task_management.infrastructure.security.filter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.github.hoangducmanh.smart_task_management.infrastructure.security.AuthenticateUser;
 import com.github.hoangducmanh.smart_task_management.infrastructure.security.service.JwtService;
-import com.github.hoangducmanh.smart_task_management.infrastructure.security.service.UserDetailServiceImpl;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserDetailServiceImpl userDetailService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, 
@@ -36,18 +37,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String jwt = authHeader.substring(7);
-        final String userId = jwtService.extractUserId(jwt);
-        
-        if(userId!=null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userDetails = userDetailService.loadUserByUsername(userId);
-            if(jwtService.isTokenValid(jwt)) {
+
+        if(!jwtService.isTokenValid(jwt)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        if(SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                final AuthenticateUser authenticateUser = new AuthenticateUser(
+                    UUID.fromString(jwtService.extractUserId(jwt)),
+                    jwtService.extractRoles(jwt) 
+            );
                 var authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
+                    authenticateUser,
                     null,
-                    userDetails.getAuthorities()
+                    authenticateUser.roles().stream().map(SimpleGrantedAuthority::new).toList()
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+            
         }
         filterChain.doFilter(request, response);
     }

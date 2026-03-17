@@ -1,5 +1,7 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginResult;
@@ -39,6 +41,7 @@ public class LoginUseCase implements LoginPort {
         this.clockSystem = clockSystem;
     }
 
+    @Transactional
     @Override
     public LoginResult execute(LoginCommand loginCommand) {
         Email email = Email.of(loginCommand.email());

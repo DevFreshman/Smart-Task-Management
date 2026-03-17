@@ -12,7 +12,7 @@ public record Email(String value) {
         "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
     );
     public Email {
-        Objects.requireNonNull(value, "Email cannot be null or blank");
+        Objects.requireNonNull(value, "Email cannot be null");
         String trimmedValue = value.trim();
         if (trimmedValue.isEmpty()) {
             throw new InvalidEmailException("Email cannot be empty");

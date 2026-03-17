@@ -2,6 +2,7 @@ package com.github.hoangducmanh.smart_task_management.infrastructure.security.se
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class JwtService implements AccessTokenGeneratorPort{
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(userId.value().toString())
-                .claim("role", role.name())
+                .claim("role", role.getAuthority())
                 .issuedAt(java.util.Date.from(now))
                 .expiration(java.util.Date.from(now.plusMillis(expirationMs)))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), Jwts.SIG.HS256)
@@ -47,17 +48,29 @@ public class JwtService implements AccessTokenGeneratorPort{
         return parseClaims(token).getSubject();
     }
 
-    public String extractUserRole(String token) {
-        return parseClaims(token).get("role", String.class);
+    public List<String> extractRoles(String token) {
+        Object role = parseClaims(token).get("role");
+
+    if (role instanceof List<?> list) {
+        return list.stream()
+            .filter(item -> item instanceof String)
+            .map(item -> (String) item)
+            .toList();
+    }
+
+    if (role instanceof String s) {
+        return List.of(s);
+    }
+
+    return List.of();
     }
 
     public boolean isTokenValid(String token) {
         try {
             Claims claims = parseClaims(token);
-            return claims.getExpiration().after(new Date());
+            return claims.getExpiration().after(new Date()) && claims.getSubject() != null;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
+        }
     }
     }
-
-}

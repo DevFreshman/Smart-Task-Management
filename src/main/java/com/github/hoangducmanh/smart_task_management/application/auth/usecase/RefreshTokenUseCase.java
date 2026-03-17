@@ -2,6 +2,8 @@ package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenResult;
@@ -35,6 +37,7 @@ public class RefreshTokenUseCase implements RefreshTokenPort {
         this.clockSystem = clockSystem;
     }
 
+    @Transactional
     @Override
     public RefreshTokenResult execute(RefreshTokenCommand command) {
         String refreshToken = command.refreshToken();

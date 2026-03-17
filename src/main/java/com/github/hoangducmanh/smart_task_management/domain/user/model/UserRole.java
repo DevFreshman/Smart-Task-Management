@@ -13,6 +13,10 @@ public enum UserRole {
         return roleName;
     }
 
+    public String getAuthority() {
+        return "ROLE_" + roleName.toUpperCase();
+    }
+
     public static UserRole fromRoleName(String roleName) {
         for (UserRole role : values()) {
             if (role.roleName.equalsIgnoreCase(roleName)) {
