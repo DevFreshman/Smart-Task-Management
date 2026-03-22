@@ -10,8 +10,8 @@ import com.github.hoangducmanh.smart_task_management.application.auth.usecase.Lo
 import com.github.hoangducmanh.smart_task_management.application.auth.usecase.RefreshTokenUseCase;
 import com.github.hoangducmanh.smart_task_management.application.auth.usecase.RegisterUseCase;
 import com.github.hoangducmanh.smart_task_management.infrastructure.clock.ClockSystemImpl;
-import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.refresh.JpaRefreshTokenAdapter;
-import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.user.JpaUserPersistenceAdapter;
+import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.refresh.RefreshTokenAdapter;
+import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.user.UserRepositoryAdapter;
 import com.github.hoangducmanh.smart_task_management.infrastructure.security.service.JwtService;
 import com.github.hoangducmanh.smart_task_management.infrastructure.security.service.PasswordService;
 import com.github.hoangducmanh.smart_task_management.infrastructure.security.service.RefreshService;
@@ -21,11 +21,11 @@ public class AuthUseCaseConfig {
 
     @Bean
     public LoginPort loginUseCase(
-        JpaRefreshTokenAdapter refreshTokenRepository,
+        RefreshTokenAdapter refreshTokenRepository,
         JwtService jwtService,
         RefreshService refreshService,
         PasswordService passwordService,
-        JpaUserPersistenceAdapter userRepository,
+        UserRepositoryAdapter userRepository,
         ClockSystemImpl clockSystem
     ) {
         return new LoginUseCase(refreshTokenRepository,
@@ -39,7 +39,7 @@ public class AuthUseCaseConfig {
 
     @Bean
     public LogoutUseCase logoutUseCase(
-        JpaRefreshTokenAdapter refreshTokenRepository,
+        RefreshTokenAdapter refreshTokenRepository,
         ClockSystemImpl clockSystem
     ) {
         return new LogoutUseCase(
@@ -52,8 +52,8 @@ public class AuthUseCaseConfig {
     public RefreshTokenUseCase refreshTokenUseCase(
             AccessTokenGeneratorPort accessTokenGenerator,
             RefreshService refreshService,
-            JpaRefreshTokenAdapter refreshTokenRepository,
-            JpaUserPersistenceAdapter userRepository,
+            RefreshTokenAdapter refreshTokenRepository,
+            UserRepositoryAdapter userRepository,
             ClockSystemImpl clockSystem
     ) {
         return new RefreshTokenUseCase(
@@ -69,7 +69,7 @@ public class AuthUseCaseConfig {
     @Bean
     public RegisterUseCase registerUseCase(
             PasswordService passwordService,
-            JpaUserPersistenceAdapter userRepository,
+            UserRepositoryAdapter userRepository,
             ClockSystemImpl clockSystem
     ) {
         return new RegisterUseCase(

@@ -4,19 +4,29 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
 
-import lombok.RequiredArgsConstructor;
 
 
-@RequiredArgsConstructor
 @Repository
-public class JpaRefreshTokenAdapter implements RefreshTokenRepository {
+public class RefreshTokenAdapter implements RefreshTokenRepository {
 
     private final RefreshTokenJpaRepository refreshTokenJpaRepository;
+
+    private final long refreshTokenExpirationMs;
+
+    public RefreshTokenAdapter(
+        RefreshTokenJpaRepository refreshTokenJpaRepository,
+        @Value("${REFRESH_TOKEN_EXPIRATION_MS}") long refreshTokenExpirationMs
+    ) {
+        this.refreshTokenJpaRepository = refreshTokenJpaRepository;
+        this.refreshTokenExpirationMs = refreshTokenExpirationMs;
+    }
+
     @Override
     public Optional<UUID> consumeAndGetUserId(String hashRefresh, Instant now) {
         return refreshTokenJpaRepository.consumeAndGetUserId(hashRefresh, now);
@@ -29,7 +39,7 @@ public class JpaRefreshTokenAdapter implements RefreshTokenRepository {
             refreshToken.hashToken(),
             refreshToken.userId(),
             now,
-            now.minusMillis(Long.parseLong(System.getenv("REFRESH_TOKEN_EXPIRATION_MS"))),
+            now.plusMillis(Long.parseLong(String.valueOf(refreshTokenExpirationMs))),
             null
         );
 

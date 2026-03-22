@@ -1,5 +1,6 @@
 package com.github.hoangducmanh.smart_task_management.infrastructure.persistence.refresh;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,12 +21,12 @@ public class RefreshTokenJpaRepositoryImpl implements RefreshTokenRepositoryCust
         List<UUID> result = jdbcTemplate.query("""
             UPDATE refresh_tokens
             SET revoked_at = ?
-            WHERE hash_token = ?
+            WHERE token_hash = ?
               AND revoked_at IS NULL
             RETURNING user_id
         """,
         (rs, rowNum) -> rs.getObject("user_id", UUID.class),
-        now, hashToken);
+        Timestamp.from(now), hashToken);
 
         return result.stream().findFirst();
     }

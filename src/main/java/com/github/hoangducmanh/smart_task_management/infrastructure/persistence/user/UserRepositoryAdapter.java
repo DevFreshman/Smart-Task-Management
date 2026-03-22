@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Repository
-public class JpaUserPersistenceAdapter implements UserRepository {
+public class UserRepositoryAdapter implements UserRepository {
     private final UserJpaRepository userJpaRepository;
     private final UserPersistenceMapper userPersistenceMapper;
     
@@ -32,7 +32,8 @@ public class JpaUserPersistenceAdapter implements UserRepository {
     @Override
     public User save(User user) {
         Objects.requireNonNull(user, "User cannot be null");
-        UserEntity savedEntity = userJpaRepository.save(userPersistenceMapper.toEntity(user));
+        UserEntity entity = userPersistenceMapper.toEntity(user);
+        UserEntity savedEntity = userJpaRepository.save(entity);
         return userPersistenceMapper.toDomain(savedEntity);
     }
 
