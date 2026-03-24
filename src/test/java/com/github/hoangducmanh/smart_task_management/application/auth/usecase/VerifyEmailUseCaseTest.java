@@ -1,13 +1,13 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailToken;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.VerifyEmailCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.TokenDoesNotMatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailTokenHashPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailVerificationTokenStore;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailOTPHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailVerificationOTPStore;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.HashedPassword;
@@ -35,8 +35,8 @@ import static org.mockito.Mockito.when;
 class VerifyEmailUseCaseTest {
 
     private UserRepository userRepository;
-    private EmailVerificationTokenStore emailTokenRepository;
-    private EmailTokenHashPort emailTokenHashPort;
+    private EmailVerificationOTPStore emailTokenRepository;
+    private EmailOTPHashPort emailTokenHashPort;
     private ClockSystem clockSystem;
     private VerifyEmailUseCase verifyEmailUseCase;
 
@@ -48,8 +48,8 @@ class VerifyEmailUseCaseTest {
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
-        emailTokenRepository = mock(EmailVerificationTokenStore.class);
-        emailTokenHashPort = mock(EmailTokenHashPort.class);
+        emailTokenRepository = mock(EmailVerificationOTPStore.class);
+        emailTokenHashPort = mock(EmailOTPHashPort.class);
         clockSystem = mock(ClockSystem.class);
         verifyEmailUseCase = new VerifyEmailUseCase(userRepository, emailTokenRepository, emailTokenHashPort, clockSystem);
     }
@@ -63,7 +63,7 @@ class VerifyEmailUseCaseTest {
     void execute_shouldVerifyEmailSuccessfully() {
         VerifyEmailCommand command = VerifyEmailCommand.of(USER_ID, USER_EMAIL, "raw-token");
         User user = createPendingVerificationUser();
-        StoredEmailToken storedToken = StoredEmailToken.of(USER_ID, USER_EMAIL, "hashed-token");
+        StoredEmailOTP storedToken = StoredEmailOTP.of(USER_ID, USER_EMAIL, "hashed-token");
 
         when(emailTokenHashPort.hash("raw-token")).thenReturn("hashed-token");
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
@@ -156,7 +156,7 @@ class VerifyEmailUseCaseTest {
     void execute_shouldThrowWhenStoredTokenEmailDoesNotMatchCommandEmail() {
         VerifyEmailCommand command = VerifyEmailCommand.of(USER_ID, USER_EMAIL, "raw-token");
         User user = createPendingVerificationUser();
-        StoredEmailToken storedToken = StoredEmailToken.of(USER_ID, "old-email@example.com", "hashed-token");
+        StoredEmailOTP storedToken = StoredEmailOTP.of(USER_ID, "old-email@example.com", "hashed-token");
 
         when(emailTokenHashPort.hash("raw-token")).thenReturn("hashed-token");
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
@@ -178,7 +178,7 @@ class VerifyEmailUseCaseTest {
     void execute_shouldHashTokenBeforeConsumption() {
         VerifyEmailCommand command = VerifyEmailCommand.of(USER_ID, USER_EMAIL, "raw-token-value");
         User user = createPendingVerificationUser();
-        StoredEmailToken storedToken = StoredEmailToken.of(USER_ID, USER_EMAIL, "deterministic-hash");
+        StoredEmailOTP storedToken = StoredEmailOTP.of(USER_ID, USER_EMAIL, "deterministic-hash");
 
         when(emailTokenHashPort.hash("raw-token-value")).thenReturn("deterministic-hash");
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));

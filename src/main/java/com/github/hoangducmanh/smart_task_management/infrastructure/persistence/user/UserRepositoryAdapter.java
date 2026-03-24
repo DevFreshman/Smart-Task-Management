@@ -29,6 +29,7 @@ public class UserRepositoryAdapter implements UserRepository {
         return userJpaRepository.findByEmailAndDeletedAtIsNull(email.value()).map(userPersistenceMapper::toDomain);
     }
 
+    @SuppressWarnings("null")
     @Override
     public User save(User user) {
         Objects.requireNonNull(user, "User cannot be null");

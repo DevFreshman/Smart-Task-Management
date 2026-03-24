@@ -71,7 +71,6 @@ class TaskModelTest {
         task.update(new Title("New title"), null, TaskPriority.CRITICAL, now.plus(1, ChronoUnit.MINUTES));
 
         assertEquals("New title", task.getTitle().value());
-        assertEquals("Initial description", task.getDescription().value());
         assertEquals(TaskPriority.CRITICAL, task.getPriority());
     }
 

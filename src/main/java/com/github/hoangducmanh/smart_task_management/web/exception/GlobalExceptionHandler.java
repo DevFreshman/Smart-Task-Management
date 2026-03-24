@@ -40,6 +40,7 @@ public class GlobalExceptionHandler {
             case INVALID_TOKEN, TOKEN_DOES_NOT_MATCH, 
             PASSWORD_MISMATCH, EMAIL_MISMATCH -> 401;
             case EMAIL_ALREADY_EXISTS -> 409;
+            default -> 500;
         };
     }
     
@@ -49,6 +50,7 @@ public class GlobalExceptionHandler {
             case INVALID_TOKEN, TOKEN_DOES_NOT_MATCH -> "Token is invalid or expired";
             case PASSWORD_MISMATCH, EMAIL_MISMATCH -> "Email or password is incorrect"; 
             case EMAIL_ALREADY_EXISTS -> "Email already exists";
+            default -> "An unexpected error occurred";
         };
     }
 

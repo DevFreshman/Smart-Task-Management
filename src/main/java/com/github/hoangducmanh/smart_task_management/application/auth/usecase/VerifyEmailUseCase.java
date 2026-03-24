@@ -1,14 +1,14 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailToken;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.VerifyEmailCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.TokenDoesNotMatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.VerifyEmailPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailTokenHashPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailVerificationTokenStore;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailOTPHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailVerificationOTPStore;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.User;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
@@ -16,11 +16,11 @@ import com.github.hoangducmanh.smart_task_management.domain.user.repository.User
 
 public class VerifyEmailUseCase implements VerifyEmailPort {
     private final UserRepository userRepository;
-    private final EmailVerificationTokenStore emailTokenRepository;
-    private final EmailTokenHashPort emailTokenHashPort;
+    private final EmailVerificationOTPStore emailTokenRepository;
+    private final EmailOTPHashPort emailTokenHashPort;
     private final ClockSystem clockSystem;
 
-    public VerifyEmailUseCase(UserRepository userRepository, EmailVerificationTokenStore emailTokenRepository, EmailTokenHashPort emailTokenHashPort, ClockSystem clockSystem) {
+    public VerifyEmailUseCase(UserRepository userRepository, EmailVerificationOTPStore emailTokenRepository, EmailOTPHashPort emailTokenHashPort, ClockSystem clockSystem) {
         this.userRepository = userRepository;
         this.emailTokenRepository = emailTokenRepository;
         this.emailTokenHashPort = emailTokenHashPort;
@@ -42,7 +42,7 @@ public class VerifyEmailUseCase implements VerifyEmailPort {
             throw new EmailMismatchException("Provided email does not match user's email");
         }
         
-        StoredEmailToken storedToken = emailTokenRepository.consumeIfMatches(userId.value(), hashedToken).orElseThrow(
+        StoredEmailOTP storedToken = emailTokenRepository.consumeIfMatches(userId.value(), hashedToken).orElseThrow(
             () -> new TokenDoesNotMatchException("Email verification token does not match")
         );
         

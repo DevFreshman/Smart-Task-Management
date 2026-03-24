@@ -13,6 +13,7 @@ public record Title(String value) {
         if (value.length() > MAX_LENGTH) {
             throw new TitleOverLimitException("Title cannot be longer than " + MAX_LENGTH + " characters");
         }
+        value = value.trim(); // Trim leading and trailing whitespace
     }
 
 }

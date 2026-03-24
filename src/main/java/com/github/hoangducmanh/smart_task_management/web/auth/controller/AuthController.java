@@ -53,6 +53,9 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal AuthenticateUser authenticateUser) {
+        if(authenticateUser == null) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
         logoutUseCase.execute(LogoutCommand.of(authenticateUser.userId()));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

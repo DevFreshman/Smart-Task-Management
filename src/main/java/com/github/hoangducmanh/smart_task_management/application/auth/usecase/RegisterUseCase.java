@@ -2,6 +2,8 @@ package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import java.time.Instant;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterResult;
@@ -23,6 +25,7 @@ public class RegisterUseCase implements RegisterPort{
         this.passwordHashPort = passwordHashPort;
         this.clockSystem = clockSystem;
     }
+    @Transactional
     @Override
     public RegisterResult execute(RegisterCommand registerCommand) {
         Email email = Email.of(registerCommand.email());

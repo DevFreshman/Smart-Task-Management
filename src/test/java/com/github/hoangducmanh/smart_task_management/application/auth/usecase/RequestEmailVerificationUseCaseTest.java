@@ -2,13 +2,13 @@ package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.RequestEmailVerificationCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailToken;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.email.SendEmailVerificationPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailTokenGeneratorPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailTokenHashPort;
-import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.EmailVerificationTokenStore;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailOTPGeneratorPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailOTPHashPort;
+import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailVerificationOTPStore;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.HashedPassword;
@@ -34,11 +34,11 @@ import static org.mockito.Mockito.when;
 
 class RequestEmailVerificationUseCaseTest {
 
-    private EmailTokenGeneratorPort emailTokenGeneratorPort;
-    private EmailTokenHashPort emailTokenHashPort;
+    private EmailOTPGeneratorPort emailTokenGeneratorPort;
+    private EmailOTPHashPort emailTokenHashPort;
     private UserRepository userRepository;
     private SendEmailVerificationPort sendEmailVerificationPort;
-    private EmailVerificationTokenStore emailTokenRepository;
+    private EmailVerificationOTPStore emailTokenRepository;
     private ClockSystem clockSystem;
     private RequestEmailVerificationUseCase requestEmailVerificationUseCase;
 
@@ -49,11 +49,11 @@ class RequestEmailVerificationUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        emailTokenGeneratorPort = mock(EmailTokenGeneratorPort.class);
-        emailTokenHashPort = mock(EmailTokenHashPort.class);
+        emailTokenGeneratorPort = mock(EmailOTPGeneratorPort.class);
+        emailTokenHashPort = mock(EmailOTPHashPort.class);
         userRepository = mock(UserRepository.class);
         sendEmailVerificationPort = mock(SendEmailVerificationPort.class);
-        emailTokenRepository = mock(EmailVerificationTokenStore.class);
+        emailTokenRepository = mock(EmailVerificationOTPStore.class);
         clockSystem = mock(ClockSystem.class);
         requestEmailVerificationUseCase = new RequestEmailVerificationUseCase(
             emailTokenGeneratorPort, emailTokenHashPort, userRepository,
@@ -74,8 +74,8 @@ class RequestEmailVerificationUseCaseTest {
 
         when(clockSystem.now()).thenReturn(NOW);
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
-        when(emailTokenGeneratorPort.generateEmailToken()).thenReturn("raw-email-token");
-        when(emailTokenHashPort.hash("raw-email-token")).thenReturn("hashed-email-token");
+        when(emailTokenGeneratorPort.generateEmailOTP()).thenReturn("raw-email-token");
+        when(emailTokenHashPort.hash("raw-email-token")).thenReturn("hashed-email-otp");
 
         requestEmailVerificationUseCase.execute(command);
 
@@ -83,12 +83,12 @@ class RequestEmailVerificationUseCaseTest {
         verify(userRepository).findById(UserId.of(USER_ID));
 
         // Verify stored token chứa hashed token, không phải raw token
-        ArgumentCaptor<StoredEmailToken> tokenCaptor = ArgumentCaptor.forClass(StoredEmailToken.class);
+        ArgumentCaptor<StoredEmailOTP> tokenCaptor = ArgumentCaptor.forClass(StoredEmailOTP.class);
         verify(emailTokenRepository).saveOrReplace(tokenCaptor.capture());
-        StoredEmailToken savedToken = tokenCaptor.getValue();
+        StoredEmailOTP savedToken = tokenCaptor.getValue();
         assertEquals(USER_ID, savedToken.userId());
         assertEquals(USER_EMAIL, savedToken.email());
-        assertEquals("hashed-email-token", savedToken.hashedToken());
+        assertEquals("hashed-email-otp", savedToken.hashedOTP());
 
         // Verify user được save với trạng thái PENDING_VERIFICATION
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -151,7 +151,7 @@ class RequestEmailVerificationUseCaseTest {
 
         when(clockSystem.now()).thenReturn(NOW);
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
-        when(emailTokenGeneratorPort.generateEmailToken()).thenReturn("raw-verification-token");
+        when(emailTokenGeneratorPort.generateEmailOTP()).thenReturn("raw-verification-token");
         when(emailTokenHashPort.hash("raw-verification-token")).thenReturn("hashed-verification-token");
 
         requestEmailVerificationUseCase.execute(command);
@@ -170,15 +170,15 @@ class RequestEmailVerificationUseCaseTest {
 
         when(clockSystem.now()).thenReturn(NOW);
         when(userRepository.findById(UserId.of(USER_ID))).thenReturn(Optional.of(user));
-        when(emailTokenGeneratorPort.generateEmailToken()).thenReturn("secret-raw-token");
-        when(emailTokenHashPort.hash("secret-raw-token")).thenReturn("safe-hashed-token");
+        when(emailTokenGeneratorPort.generateEmailOTP()).thenReturn("secret-raw-token");
+        when(emailTokenHashPort.hash("secret-raw-token")).thenReturn("safe-hashed-otp");
 
         requestEmailVerificationUseCase.execute(command);
 
         // Verify token được hash trước khi lưu
-        ArgumentCaptor<StoredEmailToken> tokenCaptor = ArgumentCaptor.forClass(StoredEmailToken.class);
+        ArgumentCaptor<StoredEmailOTP> tokenCaptor = ArgumentCaptor.forClass(StoredEmailOTP.class);
         verify(emailTokenRepository).saveOrReplace(tokenCaptor.capture());
-        assertEquals("safe-hashed-token", tokenCaptor.getValue().hashedToken());
+        assertEquals("safe-hashed-otp", tokenCaptor.getValue().hashedOTP());
     }
 
     private User createUser() {

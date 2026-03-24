@@ -23,7 +23,7 @@ public class Task {
     private Description description;     // Description of the task
     private TaskStatus status;           // Status of the task
     private TaskPriority priority;       // Priority of the task (e.g., LOW, MEDIUM, HIGH, CRITICAL)
-    private LocalDateTime deadline;       // Deadline for the task, can be null if no deadline
+    private LocalDateTime deadline;       // Deadline for the task, using LocalDateTime for local date and time representation unnessary to handle time zones in this context
     private final UserId ownerId;          // ID of the user who owns the task
     private final Set<UserId> assigneeIds;       // IDs of users assigned to the task
     private AuditInfo auditInfo;            // Audit information (createdAt, updatedAt, createdBy, updatedBy)
@@ -87,12 +87,10 @@ public class Task {
         if(title != null) {
             this.title = title;
         }
-        if(description != null) {
-            this.description = description;
-        }
         if(priority != null) {
             this.priority = priority;
         }
+        this.description = description;
         this.auditInfo = this.auditInfo.update(now);
     }
     public void delete(Instant now) {

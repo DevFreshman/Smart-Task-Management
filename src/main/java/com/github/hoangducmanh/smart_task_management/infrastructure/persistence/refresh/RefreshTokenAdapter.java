@@ -39,7 +39,7 @@ public class RefreshTokenAdapter implements RefreshTokenRepository {
             refreshToken.hashToken(),
             refreshToken.userId(),
             now,
-            now.plusMillis(Long.parseLong(String.valueOf(refreshTokenExpirationMs))),
+            now.plusMillis(refreshTokenExpirationMs),
             null
         );
 

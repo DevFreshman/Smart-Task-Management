@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
 
 import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
-import com.github.hoangducmanh.smart_task_management.bootstrap.SmartTaskManagementApplication;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserRole;
 import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.refresh.RefreshTokenAdapter;
@@ -39,7 +37,6 @@ import jakarta.persistence.PersistenceContext;
     RefreshTokenJpaRepositoryImpl.class,
     RefreshTokenAdapter.class,
 })
-@ContextConfiguration(classes = SmartTaskManagementApplication.class)
 class RefreshRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest {
 
 
@@ -84,6 +81,7 @@ class RefreshRepositoryAdapterIntegrationTest extends AbstractPostgresContainerT
     @DisplayName("consumeAndGetUserId method")
     class ConsumeAndGetUserIdTest {
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return userId when hashToken exists and not expired, and delete the token")
         void shouldReturnUserIdWhenHashTokenExistsAndNotExpired() {
@@ -121,6 +119,7 @@ class RefreshRepositoryAdapterIntegrationTest extends AbstractPostgresContainerT
             assertThat(result).isEmpty();
         }
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return empty when token is already revoked")
         void shouldReturnEmptyWhenTokenIsRevoked() {
@@ -162,6 +161,7 @@ class RefreshRepositoryAdapterIntegrationTest extends AbstractPostgresContainerT
     @DisplayName("revokeByUserId method")
     class RevokeByUserIdTest {
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should revoke all tokens of the user")
         void shouldRevokeAllTokensOfTheUser() {
@@ -189,6 +189,7 @@ class RefreshRepositoryAdapterIntegrationTest extends AbstractPostgresContainerT
             assertThat(token2Opt.get().getRevokedAt()).isNotNull();
         }
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should not change already revoked tokens")
         void shouldNotChangeAlreadyRevokedTokens() {
@@ -222,6 +223,7 @@ class RefreshRepositoryAdapterIntegrationTest extends AbstractPostgresContainerT
             assertThat(token2Opt.get().getRevokedAt()).isNotNull().isEqualTo(secondRevoke);
         }
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should do nothing if token expires before revocation time")
         void shouldDoNothingIfTokenExpiresBeforeRevocationTime() {

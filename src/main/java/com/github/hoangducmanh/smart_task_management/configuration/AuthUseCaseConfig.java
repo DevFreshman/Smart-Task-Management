@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management.bootstrap.config;
+package com.github.hoangducmanh.smart_task_management.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +19,7 @@ import com.github.hoangducmanh.smart_task_management.infrastructure.security.ser
 @Configuration
 public class AuthUseCaseConfig {
 
+    // RefreshService implements both RefreshTokenHashPort and RefreshTokenGeneratorPort, so we can use it for both dependencies
     @Bean
     public LoginPort loginUseCase(
         RefreshTokenAdapter refreshTokenRepository,

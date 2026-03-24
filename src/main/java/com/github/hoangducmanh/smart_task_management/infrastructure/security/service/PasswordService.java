@@ -10,16 +10,16 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class PasswordService implements PasswordHashPort {
-    private final PasswordEncoder passsEncoder;
+    private final PasswordEncoder passEncoder;
     
     @Override
     public String encode(String password) {
-        return passsEncoder.encode(password);
+        return passEncoder.encode(password);
     }
 
     @Override
     public boolean matches(String rawPassword, String storedHash) {
-        return passsEncoder.matches(rawPassword, storedHash);
+        return passEncoder.matches(rawPassword, storedHash);
         }
 
 }

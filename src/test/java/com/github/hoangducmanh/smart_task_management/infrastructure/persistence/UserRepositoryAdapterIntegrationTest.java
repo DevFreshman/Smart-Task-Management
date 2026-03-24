@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
 
-import com.github.hoangducmanh.smart_task_management.bootstrap.SmartTaskManagementApplication;
 import com.github.hoangducmanh.smart_task_management.domain.shared.AuditInfo;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.Email;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;
@@ -38,7 +36,6 @@ import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.
     UserRepositoryAdapter.class,
     UserPersistenceMapper.class
 })
-@ContextConfiguration(classes = SmartTaskManagementApplication.class)
 class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest {
     
     @Autowired
@@ -108,6 +105,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
     @DisplayName("findById method")
     class FindByIdTest {
         
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return user when userId exists and not deleted")
         void shouldReturnUserWhenUserIdExistsAndNotDeleted() {
@@ -138,6 +136,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
             assertThat(result).isEmpty();
         }
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return empty when user is soft deleted")
         void shouldReturnEmptyWhenUserIsSoftDeleted() {
@@ -159,6 +158,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
     @DisplayName("findByEmail method")
     class FindByEmailTest {
         
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return user when email exists and not deleted")
         void shouldReturnUserWhenEmailExistsAndNotDeleted() {
@@ -190,6 +190,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
             assertThat(result).isEmpty();
         }
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return empty when user is soft deleted")
         void shouldReturnEmptyWhenUserIsSoftDeleted() {
@@ -230,6 +231,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
             assertThat(savedUser.getRole()).isEqualTo(UserRole.USER);
 
             // Verify persistence
+            @SuppressWarnings("null")
             Optional<UserEntity> persistedEntity = userJpaRepository.findById(userId);
             assertThat(persistedEntity).isPresent();
             assertThat(persistedEntity.get().getEmail()).isEqualTo("newuser@example.com");
@@ -291,6 +293,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
     @DisplayName("existsById method")
     class ExistsByIdTest {
         
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return true when userId exists and not deleted")
         void shouldReturnTrueWhenUserIdExistsAndNotDeleted() {
@@ -319,6 +322,7 @@ class UserRepositoryAdapterIntegrationTest extends AbstractPostgresContainerTest
             assertThat(result).isFalse();
         }
 
+        @SuppressWarnings("null")
         @Test
         @DisplayName("should return false when user is soft deleted")
         void shouldReturnFalseWhenUserIsSoftDeleted() {
