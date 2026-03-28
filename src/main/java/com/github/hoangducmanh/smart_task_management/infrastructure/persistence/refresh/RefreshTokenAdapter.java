@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
 
 

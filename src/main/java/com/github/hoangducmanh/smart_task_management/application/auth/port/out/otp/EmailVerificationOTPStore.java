@@ -3,7 +3,7 @@ package com.github.hoangducmanh.smart_task_management.application.auth.port.out.
 import java.util.Optional;
 import java.util.UUID;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredEmailOTP;
 
 // This repository is responsible for storing email verification tokens. It should store the token in a hashed form for security reasons.
 public interface EmailVerificationOTPStore {

@@ -15,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.EmailStatus;
 import com.github.hoangducmanh.smart_task_management.domain.user.model.UserRole;
 import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.refresh.RefreshTokenAdapter;

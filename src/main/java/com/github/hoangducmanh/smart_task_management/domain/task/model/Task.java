@@ -28,6 +28,7 @@ public class Task {
     private final Set<UserId> assigneeIds;       // IDs of users assigned to the task
     private AuditInfo auditInfo;            // Audit information (createdAt, updatedAt, createdBy, updatedBy)
     private static final int MAX_ASSIGNEES = 10; // Maximum number of assignees allowed for a task
+
     private Task(TaskId id, Title title, Description description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, UserId ownerId, Set<UserId> assigneeIds, AuditInfo auditInfo) {
         this.id = Objects.requireNonNull(id, "Task ID cannot be null");
         this.title = Objects.requireNonNull(title, "Title cannot be null");
@@ -74,11 +75,17 @@ public class Task {
     private LocalDateTime convertInstantToLocalDateTime(Instant instant) {
         return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
  }
-    public static Task create(TaskId id, Title title, Description description, TaskPriority priority, LocalDateTime deadline, UserId ownerId, Instant now) {
+    public static Task create(
+        TaskId id, Title title, 
+        Description description, TaskPriority priority, 
+        LocalDateTime deadline, UserId ownerId, Instant now
+    ) {
+
         LocalDateTime nowLocal = LocalDateTime.ofInstant(now, ZoneOffset.UTC);
         if(deadline != null && deadline.isBefore(nowLocal)) {
             throw new DeadlineInPastException("Deadline cannot be in the past"); // throws DeadlineInPastException
         }
+
         return new Task(id, title, description, TaskStatus.TODO, priority, deadline, ownerId, new HashSet<>(), AuditInfo.create(now));
     }
     // update information of task, except status and assignees
@@ -90,9 +97,13 @@ public class Task {
         if(priority != null) {
             this.priority = priority;
         }
-        this.description = description;
+        if (description != null) {
+            this.description = description;
+        }
         this.auditInfo = this.auditInfo.update(now);
     }
+
+    // delete task, but only allow if task is not already deleted
     public void delete(Instant now) {
         ensureNotDeleted();
         this.auditInfo = this.auditInfo.delete(now);
@@ -138,5 +149,25 @@ public class Task {
         }
         this.assigneeIds.remove(assigneeId);
         this.auditInfo = this.auditInfo.update(now);
+    }
+
+    public boolean isDeleted() {
+        return this.auditInfo.isDeleted();
+    }
+
+    public boolean isOverdue(Instant now) {
+        if (deadline == null) {
+            return false; // No deadline means it cannot be overdue
+        }
+        LocalDateTime nowLocal = convertInstantToLocalDateTime(now);
+        return nowLocal.isAfter(deadline);
+    }
+
+    public boolean isAssignedToUser(UserId userId) {
+        return assigneeIds.contains(userId);
+    }
+    
+    public boolean isOwnedByUser(UserId userId) {
+        return ownerId.equals(userId);
     }
 }

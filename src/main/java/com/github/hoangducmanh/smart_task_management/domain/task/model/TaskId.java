@@ -22,6 +22,9 @@ public record TaskId(UUID value) {
             throw new IllegalArgumentException("Invalid UUID string: " + value, e);
         }
     }
+    public static TaskId of(UUID value) {
+        return new TaskId(value);
+    }
     public String asString() {
         return value.toString();
     }

@@ -1,9 +1,9 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenResult;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.RefreshTokenCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.RefreshTokenResult;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.InvalidTokenException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.AccessTokenGeneratorPort;
@@ -40,7 +40,7 @@ class RefreshTokenUseCaseTest {
     private AccessTokenGeneratorPort accessTokenPort;
     private RefreshTokenGeneratorPort refreshTokenPort;
     private UserRepository userRepository;
-    private ClockSystem clockSystem;
+    private TimeProvider clockSystem;
     private RefreshTokenUseCase refreshTokenUseCase;
 
     private static final UUID USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -53,7 +53,7 @@ class RefreshTokenUseCaseTest {
         accessTokenPort = mock(AccessTokenGeneratorPort.class);
         refreshTokenPort = mock(RefreshTokenGeneratorPort.class);
         userRepository = mock(UserRepository.class);
-        clockSystem = mock(ClockSystem.class);
+        clockSystem = mock(TimeProvider.class);
         refreshTokenUseCase = new RefreshTokenUseCase(
             refreshTokenRepository, tokenHashPort, accessTokenPort, refreshTokenPort, userRepository, clockSystem
         );

@@ -1,8 +1,8 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RequestEmailVerificationCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.RequestEmailVerificationCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.email.SendEmailVerificationPort;
@@ -39,7 +39,7 @@ class RequestEmailVerificationUseCaseTest {
     private UserRepository userRepository;
     private SendEmailVerificationPort sendEmailVerificationPort;
     private EmailVerificationOTPStore emailTokenRepository;
-    private ClockSystem clockSystem;
+    private TimeProvider clockSystem;
     private RequestEmailVerificationUseCase requestEmailVerificationUseCase;
 
     private static final UUID USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -54,7 +54,7 @@ class RequestEmailVerificationUseCaseTest {
         userRepository = mock(UserRepository.class);
         sendEmailVerificationPort = mock(SendEmailVerificationPort.class);
         emailTokenRepository = mock(EmailVerificationOTPStore.class);
-        clockSystem = mock(ClockSystem.class);
+        clockSystem = mock(TimeProvider.class);
         requestEmailVerificationUseCase = new RequestEmailVerificationUseCase(
             emailTokenGeneratorPort, emailTokenHashPort, userRepository,
             sendEmailVerificationPort, emailTokenRepository, clockSystem

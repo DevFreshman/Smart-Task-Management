@@ -1,7 +1,7 @@
 package com.github.hoangducmanh.smart_task_management.web.auth.mapper;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginResult;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.LoginCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.LoginResult;
 import com.github.hoangducmanh.smart_task_management.web.auth.dto.request.LoginRequest;
 import com.github.hoangducmanh.smart_task_management.web.auth.dto.response.LoginResponse;
 

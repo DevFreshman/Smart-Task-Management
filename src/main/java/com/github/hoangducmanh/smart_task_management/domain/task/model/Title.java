@@ -16,4 +16,8 @@ public record Title(String value) {
         value = value.trim(); // Trim leading and trailing whitespace
     }
 
+    public static Title fromString(String title) {
+        return new Title(title);
+    }
+
 }

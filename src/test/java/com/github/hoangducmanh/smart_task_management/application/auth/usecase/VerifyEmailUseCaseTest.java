@@ -1,8 +1,8 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.VerifyEmailCommand;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.VerifyEmailCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.TokenDoesNotMatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
@@ -37,7 +37,7 @@ class VerifyEmailUseCaseTest {
     private UserRepository userRepository;
     private EmailVerificationOTPStore emailTokenRepository;
     private EmailOTPHashPort emailTokenHashPort;
-    private ClockSystem clockSystem;
+    private TimeProvider clockSystem;
     private VerifyEmailUseCase verifyEmailUseCase;
 
     private static final UUID USER_ID = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -50,7 +50,7 @@ class VerifyEmailUseCaseTest {
         userRepository = mock(UserRepository.class);
         emailTokenRepository = mock(EmailVerificationOTPStore.class);
         emailTokenHashPort = mock(EmailOTPHashPort.class);
-        clockSystem = mock(ClockSystem.class);
+        clockSystem = mock(TimeProvider.class);
         verifyEmailUseCase = new VerifyEmailUseCase(userRepository, emailTokenRepository, emailTokenHashPort, clockSystem);
     }
 

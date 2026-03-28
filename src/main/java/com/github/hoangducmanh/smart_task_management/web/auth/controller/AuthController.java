@@ -3,7 +3,7 @@ package com.github.hoangducmanh.smart_task_management.web.auth.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LogoutCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.LogoutCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.LoginPort;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.LogoutPort;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.RefreshTokenPort;

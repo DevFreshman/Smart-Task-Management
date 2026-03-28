@@ -4,10 +4,10 @@ import java.util.UUID;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenResult;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.RefreshTokenCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.RefreshTokenResult;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.InvalidTokenException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.RefreshTokenPort;
@@ -25,10 +25,10 @@ public class RefreshTokenUseCase implements RefreshTokenPort {
     private final AccessTokenGeneratorPort accessTokenGeneratorPort;
     private final RefreshTokenGeneratorPort refreshTokenGeneratorPort;
     private final UserRepository userRepository;
-    private final ClockSystem clockSystem;
+    private final TimeProvider clockSystem;
 
     public RefreshTokenUseCase(RefreshTokenRepository refreshTokenRepository, RefreshTokenHashPort tokenHashPort, 
-        AccessTokenGeneratorPort accessTokenGeneratorPort, RefreshTokenGeneratorPort refreshTokenGeneratorPort, UserRepository userRepository, ClockSystem clockSystem) {
+        AccessTokenGeneratorPort accessTokenGeneratorPort, RefreshTokenGeneratorPort refreshTokenGeneratorPort, UserRepository userRepository, TimeProvider clockSystem) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.tokenHashPort = tokenHashPort;
         this.accessTokenGeneratorPort = accessTokenGeneratorPort;

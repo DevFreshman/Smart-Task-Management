@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management.application.auth.dto;
+package com.github.hoangducmanh.smart_task_management.application.auth.dto.store;
 
 import java.util.UUID;
 

@@ -1,8 +1,8 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.VerifyEmailCommand;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.VerifyEmailCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.TokenDoesNotMatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.UserNotFoundException;
@@ -18,9 +18,9 @@ public class VerifyEmailUseCase implements VerifyEmailPort {
     private final UserRepository userRepository;
     private final EmailVerificationOTPStore emailTokenRepository;
     private final EmailOTPHashPort emailTokenHashPort;
-    private final ClockSystem clockSystem;
+    private final TimeProvider clockSystem;
 
-    public VerifyEmailUseCase(UserRepository userRepository, EmailVerificationOTPStore emailTokenRepository, EmailOTPHashPort emailTokenHashPort, ClockSystem clockSystem) {
+    public VerifyEmailUseCase(UserRepository userRepository, EmailVerificationOTPStore emailTokenRepository, EmailOTPHashPort emailTokenHashPort, TimeProvider clockSystem) {
         this.userRepository = userRepository;
         this.emailTokenRepository = emailTokenRepository;
         this.emailTokenHashPort = emailTokenHashPort;

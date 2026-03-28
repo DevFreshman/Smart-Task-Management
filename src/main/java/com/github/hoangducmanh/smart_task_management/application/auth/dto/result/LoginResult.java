@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management.application.auth.dto;
+package com.github.hoangducmanh.smart_task_management.application.auth.dto.result;
 
 public record LoginResult(String accessToken,String refreshToken) {
     public static LoginResult of(String accessToken, String refreshToken){

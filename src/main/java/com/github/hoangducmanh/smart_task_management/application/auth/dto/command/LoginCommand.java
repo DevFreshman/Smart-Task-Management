@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management.application.auth.dto;
+package com.github.hoangducmanh.smart_task_management.application.auth.dto.command;
 
 public record LoginCommand(String email, String password) {
     public static LoginCommand of(String email, String password){

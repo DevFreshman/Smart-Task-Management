@@ -1,7 +1,7 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LogoutCommand;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.LogoutCommand;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.token.RefreshTokenRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -17,13 +17,13 @@ import static org.mockito.Mockito.when;
 class LogoutUseCaseTest {
 
     private RefreshTokenRepository refreshTokenRepository;
-    private ClockSystem clockSystem;
+    private TimeProvider clockSystem;
     private LogoutUseCase logoutUseCase;
 
     @BeforeEach
     void setUp() {
         refreshTokenRepository = mock(RefreshTokenRepository.class);
-        clockSystem = mock(ClockSystem.class);
+        clockSystem = mock(TimeProvider.class);
         logoutUseCase = new LogoutUseCase(refreshTokenRepository, clockSystem);
     }
 

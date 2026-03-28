@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredEmailOTP;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredEmailOTP;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.otp.EmailVerificationOTPStore;
 
 public class EmailVerificationOTPStoreAdapter implements EmailVerificationOTPStore {

@@ -1,8 +1,8 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterResult;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.RegisterCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.RegisterResult;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailAlreadyExistsException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.password.PasswordHashPort;
 import com.github.hoangducmanh.smart_task_management.domain.user.exception.InvalidEmailException;
@@ -34,14 +34,14 @@ class RegisterUseCaseTest {
 
     private UserRepository userRepository;
     private PasswordHashPort passwordHashPort;
-    private ClockSystem clockSystem;
+    private TimeProvider clockSystem;
     private RegisterUseCase registerUseCase;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
         passwordHashPort = mock(PasswordHashPort.class);
-        clockSystem = mock(ClockSystem.class);
+        clockSystem = mock(TimeProvider.class);
         registerUseCase = new RegisterUseCase(userRepository, passwordHashPort, clockSystem);
     }
 

@@ -68,9 +68,10 @@ class TaskModelTest {
         Instant now = Instant.parse("2026-02-10T08:00:00Z");
         Task task = createTask(now);
 
-        task.update(new Title("New title"), null, TaskPriority.CRITICAL, now.plus(1, ChronoUnit.MINUTES));
+        task.update(new Title("New title"), new Description("New description"), TaskPriority.CRITICAL, now.plus(1, ChronoUnit.MINUTES));
 
         assertEquals("New title", task.getTitle().value());
+        assertEquals("New description", task.getDescription().value());
         assertEquals(TaskPriority.CRITICAL, task.getPriority());
     }
 

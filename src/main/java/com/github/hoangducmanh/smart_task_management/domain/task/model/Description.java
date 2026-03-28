@@ -11,4 +11,7 @@ public record Description(String value) {
         }
     }
 
+    public static Description fromString(String description) {
+        return new Description(description);
+    }
 }

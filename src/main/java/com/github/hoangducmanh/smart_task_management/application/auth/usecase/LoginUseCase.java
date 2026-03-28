@@ -2,10 +2,10 @@ package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginResult;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.LoginCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.LoginResult;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailNotExistsException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.PasswordMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.LoginPort;
@@ -27,11 +27,11 @@ public class LoginUseCase implements LoginPort {
     private final RefreshTokenGeneratorPort refreshTokenPort;
     private final RefreshTokenHashPort tokenHashPort;
     private final UserRepository userRepository;
-    private final ClockSystem clockSystem;
+    private final TimeProvider clockSystem;
 
     public LoginUseCase(RefreshTokenRepository tokenRepository, AccessTokenGeneratorPort accessTokenPort,
                         RefreshTokenGeneratorPort refreshTokenPort, PasswordHashPort passwordHashPort, RefreshTokenHashPort tokenHashPort,
-                        UserRepository userRepository, ClockSystem clockSystem) {
+                        UserRepository userRepository, TimeProvider clockSystem) {
         this.tokenRepository = tokenRepository;
         this.accessTokenPort = accessTokenPort;
         this.refreshTokenPort = refreshTokenPort;

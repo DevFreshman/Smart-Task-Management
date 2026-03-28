@@ -4,9 +4,9 @@ import java.time.Instant;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RegisterResult;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.RegisterCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.RegisterResult;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailAlreadyExistsException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.in.RegisterPort;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.password.PasswordHashPort;
@@ -19,8 +19,8 @@ import com.github.hoangducmanh.smart_task_management.domain.user.repository.User
 public class RegisterUseCase implements RegisterPort{
     private final UserRepository userRepository;
     private final PasswordHashPort passwordHashPort;
-    private final ClockSystem clockSystem;
-    public RegisterUseCase(UserRepository userRepository, PasswordHashPort passwordHashPort, ClockSystem clockSystem){
+    private final TimeProvider clockSystem;
+    public RegisterUseCase(UserRepository userRepository, PasswordHashPort passwordHashPort, TimeProvider clockSystem){
         this.userRepository = userRepository;
         this.passwordHashPort = passwordHashPort;
         this.clockSystem = clockSystem;

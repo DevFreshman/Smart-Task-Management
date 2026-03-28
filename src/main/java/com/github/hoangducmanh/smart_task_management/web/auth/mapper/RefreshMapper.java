@@ -1,7 +1,7 @@
 package com.github.hoangducmanh.smart_task_management.web.auth.mapper;
 
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.RefreshTokenResult;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.RefreshTokenCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.RefreshTokenResult;
 import com.github.hoangducmanh.smart_task_management.web.auth.dto.request.RefreshRequest;
 import com.github.hoangducmanh.smart_task_management.web.auth.dto.response.RefreshResponse;
 

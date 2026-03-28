@@ -1,9 +1,9 @@
 package com.github.hoangducmanh.smart_task_management.application.auth.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.ClockSystem;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginCommand;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.LoginResult;
-import com.github.hoangducmanh.smart_task_management.application.auth.dto.StoredRefreshToken;
+import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.command.LoginCommand;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.result.LoginResult;
+import com.github.hoangducmanh.smart_task_management.application.auth.dto.store.StoredRefreshToken;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.EmailNotExistsException;
 import com.github.hoangducmanh.smart_task_management.application.auth.exception.PasswordMismatchException;
 import com.github.hoangducmanh.smart_task_management.application.auth.port.out.password.PasswordHashPort;
@@ -41,7 +41,7 @@ class LoginUseCaseTest {
     private RefreshTokenGeneratorPort refreshTokenPort;
     private RefreshTokenHashPort tokenHashPort;
     private UserRepository userRepository;
-    private ClockSystem clockSystem;
+    private TimeProvider clockSystem;
     private LoginUseCase loginUseCase;
 
     @BeforeEach
@@ -52,7 +52,7 @@ class LoginUseCaseTest {
         refreshTokenPort = mock(RefreshTokenGeneratorPort.class);
         tokenHashPort = mock(RefreshTokenHashPort.class);
         userRepository = mock(UserRepository.class);
-        clockSystem = mock(ClockSystem.class);
+        clockSystem = mock(TimeProvider.class);
         loginUseCase = new LoginUseCase(
             tokenRepository,
             accessTokenPort,
