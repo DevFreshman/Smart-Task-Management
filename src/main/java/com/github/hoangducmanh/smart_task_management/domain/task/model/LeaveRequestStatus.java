@@ -13,6 +13,6 @@ public enum LeaveRequestStatus {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return displayName.toUpperCase();
     }
 }

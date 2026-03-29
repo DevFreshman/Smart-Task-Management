@@ -8,7 +8,7 @@ import com.github.hoangducmanh.smart_task_management.application.task.dto.result
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskOwnershipException;
 import com.github.hoangducmanh.smart_task_management.application.task.port.in.UpdateTaskPort;
-import com.github.hoangducmanh.smart_task_management.application.task.port.out.event.UpdateTaskEvent;
+import com.github.hoangducmanh.smart_task_management.application.task.port.out.event.TaskEventPublisher;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.Description;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.Task;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.TaskId;
@@ -21,11 +21,11 @@ public class UpdateTaskUseCase implements UpdateTaskPort{
 
     private final TaskRepository taskRepository;
     private final TimeProvider clock;
-    private final UpdateTaskEvent event;
+    private final TaskEventPublisher taskEventPublisher;
 
-    public UpdateTaskUseCase(TaskRepository taskRepository, UpdateTaskEvent event, TimeProvider clock) {
+    public UpdateTaskUseCase(TaskRepository taskRepository, TaskEventPublisher taskEventPublisher, TimeProvider clock) {
         this.taskRepository = taskRepository;
-        this.event = event;
+        this.taskEventPublisher = taskEventPublisher;
         this.clock = clock;
     }
 
@@ -52,7 +52,7 @@ public class UpdateTaskUseCase implements UpdateTaskPort{
         // 4. Save the updated task
         taskRepository.save(task);
         // 5. Publish task update event
-        event.publishTaskUpdateEvent(taskId.value());
+        taskEventPublisher.publishTaskUpdateEvent(taskId.value(), title.value(), description.value(), priority.name());
 
         return TaskResult.from(task);
     }

@@ -15,7 +15,7 @@ public enum TaskPriority {
     }
     
     public String getDisplayName() {
-        return displayName;
+        return displayName.toUpperCase();
     }
 
     public static TaskPriority fromString(String priority) {

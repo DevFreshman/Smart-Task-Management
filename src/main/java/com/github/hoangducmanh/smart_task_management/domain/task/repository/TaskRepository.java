@@ -1,5 +1,6 @@
 package com.github.hoangducmanh.smart_task_management.domain.task.repository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +17,14 @@ public interface TaskRepository {
     boolean existsById(TaskId id);
 
     // User
+    // Find tasks where user is owner or assignee
     PageResult<Task> findByOwnerId(UserId ownerId, int page, int size);
     PageResult<Task> findByAssigneeId(UserId assigneeId, int page, int size);
     PageResult<Task> findByFilter(UserId ownerId, TaskFilter filter, int page, int size);
     PageResult<Task> findByKeyword(UserId reqUserId,String keyword, int page, int size);
+    
+    // Delete task (soft delete by setting deletedAt timestamp)
+    void softDeleteTask(TaskId taskId, Instant deletedAt);
 
     // ADMIN
     PageResult<Task> findAllWithFilter(TaskFilter filter, int page, int size);

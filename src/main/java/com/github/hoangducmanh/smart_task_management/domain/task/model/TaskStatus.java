@@ -50,7 +50,7 @@ public enum TaskStatus {
     }
     
     public String getDisplayName() {
-        return displayName;
+        return displayName.toUpperCase();
     }
 
     public static TaskStatus fromDisplayName(String displayName) {

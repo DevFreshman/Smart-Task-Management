@@ -126,6 +126,7 @@ public class Task {
         this.status = this.status.updateStatus(newStatus); // throws TaskStatusTransitionException if invalid transition
         this.auditInfo = this.auditInfo.update(now);
     }
+    // assign task to user, but only allow if user is not owner, not already an assignee, and task
     public void assignToUsers(UserId newAssigneeId, Instant now) {
         Objects.requireNonNull(newAssigneeId, "New assignee ID cannot be null");
         ensureNotDeleted();
@@ -141,6 +142,7 @@ public class Task {
         this.assigneeIds.add(newAssigneeId);
         this.auditInfo = this.auditInfo.update(now);
     }
+
     public void removeAssignee(UserId assigneeId, Instant now) {
         Objects.requireNonNull(assigneeId, "Assignee ID cannot be null");
         ensureNotDeleted();
