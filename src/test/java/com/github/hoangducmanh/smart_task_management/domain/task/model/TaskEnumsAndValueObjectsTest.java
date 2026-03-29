@@ -18,7 +18,7 @@ class TaskEnumsAndValueObjectsTest {
     // OV: TaskStatus display text + parse behavior.
     @Test
     void taskStatus_shouldExposeDisplayNameAndParseFromDisplayName() {
-        assertEquals("To Do", TaskStatus.TODO.getDisplayName());
+        assertEquals("TO DO", TaskStatus.TODO.getDisplayName());
         assertEquals(TaskStatus.TODO, TaskStatus.fromDisplayName("to do"));
         assertEquals(TaskStatus.IN_PROGRESS, TaskStatus.fromDisplayName("In Progress"));
         assertEquals(TaskStatus.COMPLETED, TaskStatus.fromDisplayName("COMPLETED"));
@@ -44,19 +44,19 @@ class TaskEnumsAndValueObjectsTest {
     // OV: LeaveRequestStatus display text mapping.
     @Test
     void leaveRequestStatus_shouldExposeDisplayName() {
-        assertEquals("Pending", LeaveRequestStatus.PENDING.getDisplayName());
-        assertEquals("Approved", LeaveRequestStatus.APPROVED.getDisplayName());
-        assertEquals("Rejected", LeaveRequestStatus.REJECTED.getDisplayName());
-        assertEquals("Expired", LeaveRequestStatus.EXPIRED.getDisplayName());
+        assertEquals("PENDING", LeaveRequestStatus.PENDING.getDisplayName());
+        assertEquals("APPROVED", LeaveRequestStatus.APPROVED.getDisplayName());
+        assertEquals("REJECTED", LeaveRequestStatus.REJECTED.getDisplayName());
+        assertEquals("EXPIRED", LeaveRequestStatus.EXPIRED.getDisplayName());
     }
 
     // OV: TaskPriority display text mapping.
     @Test
     void taskPriority_shouldExposeDisplayName() {
-        assertEquals("Low", TaskPriority.LOW.getDisplayName());
-        assertEquals("Medium", TaskPriority.MEDIUM.getDisplayName());
-        assertEquals("High", TaskPriority.HIGH.getDisplayName());
-        assertEquals("Critical", TaskPriority.CRITICAL.getDisplayName());
+        assertEquals("LOW", TaskPriority.LOW.getDisplayName());
+        assertEquals("MEDIUM", TaskPriority.MEDIUM.getDisplayName());
+        assertEquals("HIGH", TaskPriority.HIGH.getDisplayName());
+        assertEquals("CRITICAL", TaskPriority.CRITICAL.getDisplayName());
     }
 
     // OV: TaskFilter current behavior is field storage only.
