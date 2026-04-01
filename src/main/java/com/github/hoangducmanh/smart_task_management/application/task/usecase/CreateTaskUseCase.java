@@ -6,8 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.command.CreateTaskCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.event.TaskCreateEvent;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskResult;
 import com.github.hoangducmanh.smart_task_management.application.task.port.in.CreateTaskPort;
+import com.github.hoangducmanh.smart_task_management.application.task.port.out.event.TaskEventPublisher;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.Description;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.Task;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.TaskId;
@@ -20,10 +22,12 @@ import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
 public class CreateTaskUseCase implements CreateTaskPort{
 
     private final TaskRepository taskRepository;
+    private final TaskEventPublisher taskEventPublisher;
     private final TimeProvider clockSystem;
 
-    public CreateTaskUseCase(TaskRepository taskRepository, TimeProvider clockSystem) {
+    public CreateTaskUseCase(TaskRepository taskRepository, TaskEventPublisher taskEventPublisher, TimeProvider clockSystem) {
         this.taskRepository = taskRepository;
+        this.taskEventPublisher = taskEventPublisher;
         this.clockSystem = clockSystem;
     }
 
@@ -46,6 +50,12 @@ public class CreateTaskUseCase implements CreateTaskPort{
         clockSystem.now()
         );
         taskRepository.save(task);
+
+        TaskCreateEvent event = new TaskCreateEvent(
+            task.getId().value());
+        
+        taskEventPublisher.publishTaskCreateEvent(event);
+
         return TaskResult.from(task);
     }
 

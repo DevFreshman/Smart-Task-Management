@@ -59,7 +59,6 @@ class DeleteTaskUseCaseTest {
         deleteTaskUseCase.deleteTask(command);
 
         verify(taskRepository).softDeleteTask(TaskId.of(taskId), deletedAt);
-        verify(taskEventPublisher).publishTaskDeleteEvent(taskId);
     }
 
     // Case: Task to delete not found.

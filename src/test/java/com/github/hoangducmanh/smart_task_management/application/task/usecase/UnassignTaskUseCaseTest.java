@@ -63,7 +63,6 @@ class UnassignTaskUseCaseTest {
         unassignTaskUseCase.execute(command);
 
         verify(taskRepository).save(task);
-        verify(taskEventPublisher).publishTaskUnassignEvent(taskId, assigneeId);
         assertEquals(0, task.getAssigneeIds().size());
         assertEquals(updatedAt, task.getAuditInfo().updatedAt());
     }

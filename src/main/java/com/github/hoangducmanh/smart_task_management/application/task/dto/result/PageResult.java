@@ -1,4 +1,4 @@
-package com.github.hoangducmanh.smart_task_management.domain.shared;
+package com.github.hoangducmanh.smart_task_management.application.task.dto.result;
 
 import java.util.List;
 

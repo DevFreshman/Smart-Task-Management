@@ -4,9 +4,9 @@ import com.github.hoangducmanh.smart_task_management.domain.task.exception.Conte
 import com.github.hoangducmanh.smart_task_management.domain.task.exception.DescriptionOverLimitException;
 import com.github.hoangducmanh.smart_task_management.domain.task.exception.TaskStatusTransitionException;
 import com.github.hoangducmanh.smart_task_management.domain.task.exception.TitleOverLimitException;
+
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,20 +57,6 @@ class TaskEnumsAndValueObjectsTest {
         assertEquals("MEDIUM", TaskPriority.MEDIUM.getDisplayName());
         assertEquals("HIGH", TaskPriority.HIGH.getDisplayName());
         assertEquals("CRITICAL", TaskPriority.CRITICAL.getDisplayName());
-    }
-
-    // OV: TaskFilter current behavior is field storage only.
-    @Test
-    void taskFilter_shouldStoreProvidedFields() {
-        LocalDateTime from = LocalDateTime.of(2026, 2, 1, 8, 0);
-        LocalDateTime to = LocalDateTime.of(2026, 2, 20, 8, 0);
-
-        TaskFilter filter = new TaskFilter(TaskStatus.IN_PROGRESS, TaskPriority.HIGH, from, to);
-
-        assertEquals(TaskStatus.IN_PROGRESS, filter.status());
-        assertEquals(TaskPriority.HIGH, filter.priority());
-        assertEquals(from, filter.deadlineFrom());
-        assertEquals(to, filter.deadlineTo());
     }
 
     // OV: Title boundary/required validation.

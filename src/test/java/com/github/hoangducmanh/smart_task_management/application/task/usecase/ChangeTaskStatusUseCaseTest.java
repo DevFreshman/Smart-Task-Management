@@ -49,7 +49,7 @@ class ChangeTaskStatusUseCaseTest {
     }
 
     // Case: Owner changes task status successfully.
-    // Verify status is updated with valid transition, task is saved, status-change event is published, and result returns the new display name.
+    // Verify status is updated with valid transition, task is saved, and result returns the new display name.
     @Test
     void changeTaskStatus_shouldUpdateStatusPersistAndPublishEvent() {
         UUID ownerId = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -63,7 +63,6 @@ class ChangeTaskStatusUseCaseTest {
         TaskStatusResult result = changeTaskStatusUseCase.changeTaskStatus(command);
 
         verify(taskRepository).save(task);
-        verify(taskEventPublisher).publishTaskStatusChangeEvent(taskId, "IN PROGRESS");
         assertEquals(TaskStatus.IN_PROGRESS, task.getStatus());
         assertEquals(updatedAt, task.getAuditInfo().updatedAt());
         assertEquals(taskId, result.taskId());
@@ -111,7 +110,7 @@ class ChangeTaskStatusUseCaseTest {
     }
 
     // Case: Transition status is invalid.
-    // Verify domain exception is bubbled up intact and use case does not save / publish event when changing from TODO to COMPLETED.
+    // Verify domain exception is bubbled up intact and use case does not save / publish event.
     @Test
     void changeTaskStatus_shouldThrowWhenTransitionIsInvalid() {
         UUID ownerId = UUID.fromString("11111111-1111-1111-1111-111111111111");

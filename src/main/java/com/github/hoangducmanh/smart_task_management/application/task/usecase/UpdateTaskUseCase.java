@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.command.UpdateTaskCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.event.TaskUpdateEvent;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskResult;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskOwnershipException;
@@ -51,8 +52,10 @@ public class UpdateTaskUseCase implements UpdateTaskPort{
         task.update(title, description, priority, clock.now());
         // 4. Save the updated task
         taskRepository.save(task);
+
+        TaskUpdateEvent event = new TaskUpdateEvent(taskId.value());
         // 5. Publish task update event
-        taskEventPublisher.publishTaskUpdateEvent(taskId.value(), title.value(), description.value(), priority.name());
+        taskEventPublisher.publishTaskUpdateEvent(event);
 
         return TaskResult.from(task);
     }

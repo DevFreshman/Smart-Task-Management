@@ -71,10 +71,15 @@ public class Task {
     
     private void ensureNotDeleted() {
     if (auditInfo.isDeleted()) throw new TaskDeleteException("Task is deleted");
-  }
+    }
     private LocalDateTime convertInstantToLocalDateTime(Instant instant) {
         return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
- }
+    }
+
+    public static Task reconstitute(TaskId id, Title title, Description description, TaskStatus status, TaskPriority priority, LocalDateTime deadline, UserId ownerId, Set<UserId> assigneeIds, AuditInfo auditInfo) {
+        return new Task(id, title, description, status, priority, deadline, ownerId, assigneeIds, auditInfo);
+    }
+
     public static Task create(
         TaskId id, Title title, 
         Description description, TaskPriority priority, 

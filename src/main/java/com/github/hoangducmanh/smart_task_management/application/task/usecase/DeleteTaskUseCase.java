@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.command.DeleteTaskCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.event.TaskDeleteEvent;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskOwnershipException;
 import com.github.hoangducmanh.smart_task_management.application.task.port.in.DeleteTaskPort;
@@ -39,6 +40,9 @@ public class DeleteTaskUseCase implements DeleteTaskPort {
         }
         taskRepository.softDeleteTask(taskId, deletedAt);
         // Publish task deletion event
-        taskEventPublisher.publishTaskDeleteEvent(taskId.value());
+
+        TaskDeleteEvent event = new TaskDeleteEvent(taskId.value());
+
+        taskEventPublisher.publishTaskDeleteEvent(event);
     }
 }

@@ -2,6 +2,7 @@ package com.github.hoangducmanh.smart_task_management.application.task.usecase;
 
 import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.command.ChangeTaskStatusCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.event.TaskUpdateEvent;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskStatusResult;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskOwnershipException;
@@ -41,7 +42,9 @@ public class ChangeTaskStatusUseCase implements ChangeTaskStatusPort {
         
         taskRepository.save(task);
 
-        taskEventPublisher.publishTaskStatusChangeEvent(task.getId().value(), newStatus.getDisplayName());
+        TaskUpdateEvent event = new TaskUpdateEvent(task.getId().value());
+
+        taskEventPublisher.publishTaskUpdateEvent(event);
 
         return new TaskStatusResult(task.getId().value(), task.getStatus().getDisplayName());
     }

@@ -2,6 +2,7 @@ package com.github.hoangducmanh.smart_task_management.application.task.usecase;
 
 import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.command.UnassignTaskCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.event.TaskUpdateEvent;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskNotFoundException;
 import com.github.hoangducmanh.smart_task_management.application.task.exception.TaskOwnershipException;
 import com.github.hoangducmanh.smart_task_management.application.task.port.in.UnassignTaskPort;
@@ -41,6 +42,8 @@ public class UnassignTaskUseCase implements UnassignTaskPort {
 
         taskRepository.save(task);
 
-        taskEventPublisher.publishTaskUnassignEvent(taskId.value(), assigneeId.value());
+        TaskUpdateEvent event = new TaskUpdateEvent(taskId.value());
+
+        taskEventPublisher.publishTaskUpdateEvent(event);
     }
 }

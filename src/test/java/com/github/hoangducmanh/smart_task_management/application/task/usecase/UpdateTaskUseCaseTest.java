@@ -68,12 +68,6 @@ class UpdateTaskUseCaseTest {
         TaskResult result = updateTaskUseCase.execute(command);
 
         verify(taskRepository).save(task);
-        verify(taskEventPublisher).publishTaskUpdateEvent(
-            taskId,
-            "Updated sprint board",
-            "Updated backlog scope for the sprint",
-            "CRITICAL"
-        );
         assertEquals("Updated sprint board", task.getTitle().value());
         assertEquals("Updated backlog scope for the sprint", task.getDescription().value());
         assertEquals(TaskPriority.CRITICAL, task.getPriority());

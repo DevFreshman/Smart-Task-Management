@@ -21,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import com.github.hoangducmanh.smart_task_management.application.TimeProvider;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.command.CreateTaskCommand;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskResult;
+import com.github.hoangducmanh.smart_task_management.application.task.port.out.event.TaskEventPublisher;
 import com.github.hoangducmanh.smart_task_management.domain.task.exception.DeadlineInPastException;
 import com.github.hoangducmanh.smart_task_management.domain.task.exception.InvalidTaskPriorityException;
 import com.github.hoangducmanh.smart_task_management.domain.task.model.Task;
@@ -31,14 +32,16 @@ import com.github.hoangducmanh.smart_task_management.domain.task.repository.Task
 class CreateTaskUseCaseTest {
 
     private TaskRepository taskRepository;
+    private TaskEventPublisher taskEventPublisher;
     private TimeProvider clockSystem;
     private CreateTaskUseCase createTaskUseCase;
 
     @BeforeEach
     void setUp() {
         taskRepository = mock(TaskRepository.class);
+        taskEventPublisher = mock(TaskEventPublisher.class);
         clockSystem = mock(TimeProvider.class);
-        createTaskUseCase = new CreateTaskUseCase(taskRepository, clockSystem);
+        createTaskUseCase = new CreateTaskUseCase(taskRepository, taskEventPublisher, clockSystem);
     }
 
     // Case: Create task successfully with valid input.
