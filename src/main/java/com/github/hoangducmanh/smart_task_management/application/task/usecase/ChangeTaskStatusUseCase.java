@@ -26,7 +26,7 @@ public class ChangeTaskStatusUseCase implements ChangeTaskStatusPort {
         this.clock = clock;
     }
     @Override
-    public TaskStatusResult changeTaskStatus(ChangeTaskStatusCommand command) {
+    public TaskStatusResult execute(ChangeTaskStatusCommand command) {
         UserId userId = UserId.of(command.requestId());
         TaskId taskId = TaskId.of(command.taskId());
         TaskStatus newStatus = TaskStatus.valueOf(command.newStatus());

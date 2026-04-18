@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
-import com.github.hoangducmanh.smart_task_management.application.task.dto.command.TaskFilterCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.query.TaskFilterQuery;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.PageResult;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskSummaryResult;
 import com.github.hoangducmanh.smart_task_management.application.task.port.out.TaskQueryServicePort;
@@ -23,7 +23,7 @@ public class JpaTaskQueryServiceAdapter implements TaskQueryServicePort {
     private final TaskJpaRepository taskJpaRepository;
 
     @Override
-    public PageResult<TaskSummaryResult> findTasksByFilter(TaskFilterCommand filter, int page, int size) {
+    public PageResult<TaskSummaryResult> findTasksByFilter(TaskFilterQuery filter, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<TaskSummaryResult> taskSummaries = taskJpaRepository.findAllByOwnerId(TaskSpecification.hasFilter(filter), pageRequest)
                 .map(taskEntity -> new TaskSummaryResult(

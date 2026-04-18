@@ -1,6 +1,6 @@
 package com.github.hoangducmanh.smart_task_management.application.task.usecase;
 
-import com.github.hoangducmanh.smart_task_management.application.task.dto.command.TaskFilterCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.query.TaskFilterQuery;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.PageResult;
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskSummaryResult;
 import com.github.hoangducmanh.smart_task_management.application.task.port.in.GetListTaskByFilterPort;
@@ -15,7 +15,7 @@ public class GetListTaskByTaskUseCase implements GetListTaskByFilterPort {
     }
 
     @Override
-    public PageResult<TaskSummaryResult> execute(TaskFilterCommand filter, int page, int size) {
+    public PageResult<TaskSummaryResult> execute(TaskFilterQuery filter, int page, int size) {
         return taskQueryRepository.findTasksByFilter(filter, page, size);
     }
 }

@@ -8,5 +8,5 @@ public class EmailNotExistsException extends AuthException{
 
     public EmailNotExistsException(String message, Throwable throwable ){
         super(message, ErrorCode.EMAIL_NOT_EXISTS, throwable);
-    };
+    }
 }

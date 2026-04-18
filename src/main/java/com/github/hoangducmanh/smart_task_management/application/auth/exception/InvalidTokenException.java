@@ -8,6 +8,6 @@ public class InvalidTokenException extends AuthException{
 
     public InvalidTokenException(String message, Throwable throwable ){
         super(message, ErrorCode.INVALID_TOKEN, throwable);
-    };
+    }
 
 }

@@ -1,20 +1,15 @@
-package com.github.hoangducmanh.smart_task_management.application.task.dto.command;
+package com.github.hoangducmanh.smart_task_management.application.task.dto.query;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-import com.github.hoangducmanh.smart_task_management.domain.task.model.Description;
-import com.github.hoangducmanh.smart_task_management.domain.task.model.TaskPriority;
-import com.github.hoangducmanh.smart_task_management.domain.task.model.TaskStatus;
-import com.github.hoangducmanh.smart_task_management.domain.task.model.Title;
-import com.github.hoangducmanh.smart_task_management.domain.user.model.UserId;
-
-public record TaskFilterCommand(
-    Title title,
-    Description description,
-    UserId ownerId, 
-    UserId assigneeId,
-    TaskStatus status, 
-    TaskPriority priority, 
+public record TaskFilterQuery(
+    String title,
+    String description,
+    UUID ownerId, 
+    UUID assigneeId,
+    String status, 
+    String priority, 
     LocalDateTime deadlineFrom, 
     LocalDateTime deadlineTo,
     boolean includedDeleted) {
@@ -24,12 +19,12 @@ public record TaskFilterCommand(
         }
 
         public static class Builder {
-            private Title title;
-            private Description description;
-            private UserId ownerId;
-            private UserId assigneeId;
-            private TaskStatus status;
-            private TaskPriority priority;
+            private String title;
+            private String description;
+            private UUID ownerId;
+            private UUID assigneeId;
+            private String status;
+            private String priority;
             private LocalDateTime deadlineFrom;
             private LocalDateTime deadlineTo;
             private boolean includedDeleted;
@@ -39,32 +34,32 @@ public record TaskFilterCommand(
                 this.includedDeleted = false; // By default, do not include deleted tasks
             }
 
-            public Builder title(Title title) {
+            public Builder title(String title) {
                 this.title = title;
                 return this;
             }
 
-            public Builder description(Description description) {
+            public Builder description(String description) {
                 this.description = description;
                 return this;
             }
 
-            public Builder ownerId(UserId ownerId) {
+            public Builder ownerId(UUID ownerId) {
                 this.ownerId = ownerId;
                 return this;
             }
 
-            public Builder assigneeId(UserId assigneeId) {
+            public Builder assigneeId(UUID assigneeId) {
                 this.assigneeId = assigneeId;
                 return this;
             }
 
-            public Builder status(TaskStatus status) {
+            public Builder status(String status) {
                 this.status = status;
                 return this;
             }
 
-            public Builder priority(TaskPriority priority) {
+            public Builder priority(String priority) {
                 this.priority = priority;
                 return this;
             }
@@ -84,8 +79,8 @@ public record TaskFilterCommand(
                 return this;
             }
 
-            public TaskFilterCommand build() {
-                return new TaskFilterCommand(
+            public TaskFilterQuery build() {
+                return new TaskFilterQuery(
                     title, 
                     description, 
                     ownerId, 

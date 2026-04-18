@@ -19,7 +19,7 @@ public class GetTaskByIdUsecase implements GetTaskByIdPort {
     
     @Override
     public TaskSummaryResult execute(UUID taskId) {
-
+        
         TaskSummaryResult cachedTask = taskCacheStore.getTaskCache(taskId);
         if (cachedTask != null) {
             return cachedTask;

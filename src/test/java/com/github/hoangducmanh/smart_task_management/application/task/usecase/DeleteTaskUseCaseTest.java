@@ -45,7 +45,7 @@ class DeleteTaskUseCaseTest {
     }
 
     // Case: Owner delete task successfully.
-    // Verify use case soft delete task bằng cách gọi repository.softDeleteTask với deletedAt timestamp, và publish event xóa task.
+    // Verify use case soft delete task.
     @Test
     void deleteTask_shouldSoftDeleteAndPublishEvent() {
         UUID ownerId = UUID.fromString("11111111-1111-1111-1111-111111111111");
@@ -56,7 +56,7 @@ class DeleteTaskUseCaseTest {
         when(clock.now()).thenReturn(deletedAt);
         when(taskRepository.findById(TaskId.of(taskId))).thenReturn(Optional.of(task));
 
-        deleteTaskUseCase.deleteTask(command);
+        deleteTaskUseCase.execute(command);
 
         verify(taskRepository).softDeleteTask(TaskId.of(taskId), deletedAt);
     }
@@ -73,7 +73,7 @@ class DeleteTaskUseCaseTest {
 
         TaskNotFoundException exception = assertThrows(
             TaskNotFoundException.class,
-            () -> deleteTaskUseCase.deleteTask(command)
+            () -> deleteTaskUseCase.execute(command)
         );
 
         assertEquals("Task not found with id: 22222222-2222-2222-2222-222222222222", exception.getMessage());
@@ -95,7 +95,7 @@ class DeleteTaskUseCaseTest {
 
         TaskOwnershipException exception = assertThrows(
             TaskOwnershipException.class,
-            () -> deleteTaskUseCase.deleteTask(command)
+            () -> deleteTaskUseCase.execute(command)
         );
 
         assertEquals("User does not have permission to delete this task", exception.getMessage());

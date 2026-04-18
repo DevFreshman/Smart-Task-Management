@@ -2,7 +2,7 @@ package com.github.hoangducmanh.smart_task_management.domain.user.model;
 
 import java.util.UUID;
 
-public final record UserId(UUID value) {
+public record UserId(UUID value) {
     public UserId {
         if(value == null) {
             throw new IllegalArgumentException("UserId cannot be null");

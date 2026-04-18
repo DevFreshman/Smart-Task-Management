@@ -101,7 +101,7 @@
   		<artifactId>flyway-database-postgresql</artifactId>
 	</dependency>
 
-	<!-- Postgresql -->
+	<!-- PostGresSQL -->
 	<dependency>
     	<groupId>org.postgresql</groupId>
     	<artifactId>postgresql</artifactId>

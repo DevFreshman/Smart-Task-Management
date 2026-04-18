@@ -4,5 +4,5 @@ import com.github.hoangducmanh.smart_task_management.application.task.dto.comman
 import com.github.hoangducmanh.smart_task_management.application.task.dto.result.TaskStatusResult;
 
 public interface ChangeTaskStatusPort {
-    TaskStatusResult changeTaskStatus(ChangeTaskStatusCommand command);
+    TaskStatusResult execute(ChangeTaskStatusCommand command);
 }

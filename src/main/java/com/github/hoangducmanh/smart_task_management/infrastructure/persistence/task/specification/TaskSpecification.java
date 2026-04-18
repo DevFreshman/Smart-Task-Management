@@ -5,18 +5,18 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.github.hoangducmanh.smart_task_management.application.task.dto.command.TaskFilterCommand;
+import com.github.hoangducmanh.smart_task_management.application.task.dto.query.TaskFilterQuery;
 import com.github.hoangducmanh.smart_task_management.infrastructure.persistence.task.entity.TaskEntity;
 
 public class TaskSpecification {
 
-    public static Specification<TaskEntity> hasFilter(TaskFilterCommand filter) {
+    public static Specification<TaskEntity> hasFilter(TaskFilterQuery filter) {
         return Specification.<TaskEntity>unrestricted()
-                .and(hasOwnerId(filter.ownerId().value()))
-                .and(hasTitle(filter.title().value()))
-                .and(hasDescription(filter.description().value()))
-                .and(hasStatus(filter.status().getDisplayName()))
-                .and(hasPriority(filter.priority().getDisplayName()))
+                .and(hasOwnerId(filter.ownerId()))
+                .and(hasTitle(filter.title()))
+                .and(hasDescription(filter.description()))
+                .and(hasStatus(filter.status()))
+                .and(hasPriority(filter.priority()))
                 .and(hasDeadlineFrom(filter.deadlineFrom()))
                 .and(hasDeadlineTo(filter.deadlineTo()))
                 .and(hasDeleted(filter.includedDeleted()));

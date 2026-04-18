@@ -41,7 +41,7 @@ public class EmailVerificationOTPStoreAdapter implements EmailVerificationOTPSto
         String key = keyPrefix + userId.toString();
         HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
         Map<String, String> entries = hashOps.entries(key);
-        if (entries == null || entries.isEmpty()) {
+        if (entries.isEmpty()) {
             return Optional.empty();
         }
         String email = hashOps.get(key, "email");

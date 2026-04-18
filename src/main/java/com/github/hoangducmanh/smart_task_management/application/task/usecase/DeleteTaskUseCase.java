@@ -27,7 +27,7 @@ public class DeleteTaskUseCase implements DeleteTaskPort {
     }
 
     @Override
-    public void deleteTask(DeleteTaskCommand command) {
+    public void execute(DeleteTaskCommand command) {
         UserId userId = UserId.of(command.requestId());
         TaskId taskId = TaskId.of(command.taskId());
         Instant deletedAt = clock.now();

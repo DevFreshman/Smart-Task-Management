@@ -89,7 +89,7 @@ public class EmailOTPStoreAdapterIntegrationTest extends AbstractRedisContainerT
             UUID userId = UUID.randomUUID();
             StoredEmailOTP otp = StoredEmailOTP.of(userId,
                 "test@example.com", "hashed-sample-otp");
-            String key = "email_verification:" + userId.toString();
+            String key = "email_verification:" + userId;
             hashOps.put(key, "email", otp.email());    
             hashOps.put(key, "hashedOTP", otp.hashedOTP());
             
@@ -110,7 +110,7 @@ public class EmailOTPStoreAdapterIntegrationTest extends AbstractRedisContainerT
             UUID userId = UUID.randomUUID();
             StoredEmailOTP otp = StoredEmailOTP.of(userId,
                 "test@example.com", "hashed-sample-otp");
-            String key = "email_verification:" + userId.toString();
+            String key = "email_verification:" + userId;
             hashOps.put(key, "email", otp.email());
             hashOps.put(key, "hashedOTP", otp.hashedOTP());
 

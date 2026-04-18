@@ -60,7 +60,7 @@ class ChangeTaskStatusUseCaseTest {
         when(taskRepository.findById(TaskId.of(taskId))).thenReturn(Optional.of(task));
         when(clock.now()).thenReturn(updatedAt);
 
-        TaskStatusResult result = changeTaskStatusUseCase.changeTaskStatus(command);
+        TaskStatusResult result = changeTaskStatusUseCase.execute(command);
 
         verify(taskRepository).save(task);
         assertEquals(TaskStatus.IN_PROGRESS, task.getStatus());
@@ -80,7 +80,7 @@ class ChangeTaskStatusUseCaseTest {
 
         TaskNotFoundException exception = assertThrows(
             TaskNotFoundException.class,
-            () -> changeTaskStatusUseCase.changeTaskStatus(command)
+            () -> changeTaskStatusUseCase.execute(command)
         );
 
         assertEquals("Task not found with id: 22222222-2222-2222-2222-222222222222", exception.getMessage());
@@ -101,7 +101,7 @@ class ChangeTaskStatusUseCaseTest {
 
         TaskOwnershipException exception = assertThrows(
             TaskOwnershipException.class,
-            () -> changeTaskStatusUseCase.changeTaskStatus(command)
+            () -> changeTaskStatusUseCase.execute(command)
         );
 
         assertEquals("User does not have permission to change status of this task", exception.getMessage());
@@ -122,7 +122,7 @@ class ChangeTaskStatusUseCaseTest {
 
         TaskStatusTransitionException exception = assertThrows(
             TaskStatusTransitionException.class,
-            () -> changeTaskStatusUseCase.changeTaskStatus(command)
+            () -> changeTaskStatusUseCase.execute(command)
         );
 
         assertEquals("Invalid status transition from TODO to COMPLETED", exception.getMessage());
